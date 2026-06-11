@@ -12,6 +12,7 @@ export interface JourneyStep {
   id: string;
   title: string;
   role: string;
+  journey: string;
   stage: string;
   publicLabel: string;
   routePatterns?: string[];
