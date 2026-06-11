@@ -1,0 +1,19 @@
+{
+  "name": "contextatlas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Repo-native journey and architecture mapping toolkit for AI-assisted software teams.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/schema packages/cli packages/react",
+    "typecheck": "tsc -b packages/schema packages/cli packages/react --pretty",
+    "lint": "npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

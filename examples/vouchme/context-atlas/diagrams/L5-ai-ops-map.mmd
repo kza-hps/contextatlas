@@ -1,0 +1,8 @@
+flowchart LR
+  A["Journey register"] --> B["Context packs"]
+  B --> C["Claude implementation prompt"]
+  B --> D["Codex handoff"]
+  A --> E["Playwright tests"]
+  A --> F["UAT notes"]
+  F --> G["Expansion rules"]
+  G --> H["Only expand after route and data ownership are verified"]

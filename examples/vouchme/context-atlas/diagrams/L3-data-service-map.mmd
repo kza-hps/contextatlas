@@ -1,0 +1,11 @@
+flowchart LR
+  A["candidates"] --> B["vouch_requests"]
+  B --> C["referee_invitations"]
+  C --> D["vouch_responses"]
+  D --> E["vouch_ids"]
+  E --> F["access_requests"]
+  F --> G["signal_views"]
+  H["referee_profiles"] --> D
+  I["recruiters"] --> F
+  J["audit_events"] --> B
+  J --> F
