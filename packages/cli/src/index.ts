@@ -21,6 +21,7 @@ switch (command) {
     runContextCommand(coordinate);
     break;
   case undefined:
+  case "help":
   case "--help":
   case "-h":
     printHelp();

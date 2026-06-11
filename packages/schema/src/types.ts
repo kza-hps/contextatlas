@@ -26,3 +26,18 @@ export interface JourneyStep {
     expandOnlyIf?: string[];
   };
 }
+
+export interface AtlasLayerDefinition {
+  id: AtlasLayer;
+  name: string;
+  visibility: "public" | "app" | "internal";
+  description: string;
+}
+
+export interface AtlasConfig {
+  name: string;
+  version: string;
+  coordinatePrefix: string;
+  defaultPublicLayer: AtlasLayer;
+  layers: AtlasLayerDefinition[];
+}

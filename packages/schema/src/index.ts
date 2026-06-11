@@ -1,1 +1,7 @@
-export type { AtlasCoordinate, AtlasLayer, JourneyStep } from "./types.js";
+export type {
+  AtlasConfig,
+  AtlasCoordinate,
+  AtlasLayer,
+  AtlasLayerDefinition,
+  JourneyStep,
+} from "./types.js";

@@ -1,6 +1,7 @@
 export function runContextCommand(coordinate?: string): void {
   if (!coordinate) {
-    console.log("ContextAtlas context: provide a coordinate, for example VM.J.CAN.040.");
+    console.error("Error: Please provide a coordinate, for example VM.J.CAN.040.");
+    process.exitCode = 1;
     return;
   }
 
