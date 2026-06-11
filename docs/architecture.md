@@ -2,6 +2,8 @@
 
 ContextAtlas starts as a TypeScript monorepo with small package boundaries and an example atlas.
 
+The implementation strategy is documented in [solution-path.md](./solution-path.md). In short: build the repo-native CLI and shared core engine first, add MCP for AI agents next, and defer app or executable packaging until the workflow is proven.
+
 ## Monorepo Structure
 
 ```txt

@@ -37,6 +37,10 @@ npm run typecheck
 npm run build
 ```
 
+## Solution Path
+
+ContextAtlas is intended to be CLI-first and repo-native, with atlas files as the source of truth. See [docs/solution-path.md](docs/solution-path.md) for the planned path from CLI to shared core engine, MCP server, viewer, and eventual packaging.
+
 ## First Example
 
 The first example atlas lives at:
