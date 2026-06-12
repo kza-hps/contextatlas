@@ -5,6 +5,7 @@ import { runGenerateCommand } from "./commands/generate.js";
 import { runInitCommand } from "./commands/init.js";
 import { runScanCommand } from "./commands/scan.js";
 
+const version = "0.1.0";
 const [, , command, coordinate] = process.argv;
 
 switch (command) {
@@ -25,6 +26,10 @@ switch (command) {
   case "--help":
   case "-h":
     printHelp();
+    break;
+  case "--version":
+  case "-v":
+    console.log(version);
     break;
   default:
     console.error(`ContextAtlas: unknown command "${command}".`);
