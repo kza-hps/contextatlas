@@ -75,8 +75,8 @@ nodes:
         - Candidate wording is project evidence, not global vocabulary.
     relationships:
       - type: depends-on
-        target: CA:KZA:VOUCHME:N00120
-        label: Invitation email event
+        target: CA:KZA:VOUCHME:N00025
+        label: Referee receives invitation
         confidence: 0.5
 
   - coordinate: CA:KZA:VOUCHME:N00025

@@ -51,7 +51,7 @@ export interface AtlasLayerDefinition {
 export interface AtlasConfig {
   name: string;
   version: string;
-  coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}" | string;
+  coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}" | (string & {});
   organizationCode?: string;
   propertyCode?: string;
   defaultPublicLayer: AtlasLayer;
