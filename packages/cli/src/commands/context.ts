@@ -9,5 +9,11 @@ export function runContextCommand(coordinate?: string): void {
     return;
   }
 
+  const coordinatePattern = /^CA:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+$/i;
+
+  if (!coordinatePattern.test(trimmed)) {
+    console.warn("Warning: Coordinate does not match the standard 'CA:{ORG}:{PROPERTY}:{NODE}' format.");
+  }
+
   console.log(`ContextAtlas context: context lookup for ${trimmed} not implemented yet.`);
 }
