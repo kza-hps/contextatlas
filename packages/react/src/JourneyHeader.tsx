@@ -3,7 +3,7 @@ import { useId } from "react";
 
 export type JourneyHeaderHeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-export interface JourneyHeaderProps extends ComponentPropsWithoutRef<"header"> {
+export interface JourneyHeaderProps extends Omit<ComponentPropsWithoutRef<"header">, "children"> {
   coordinate: string;
   label: string;
   headingLevel?: JourneyHeaderHeadingLevel;
