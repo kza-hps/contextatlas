@@ -41,3 +41,14 @@ export interface AtlasConfig {
   defaultPublicLayer: AtlasLayer;
   layers: AtlasLayerDefinition[];
 }
+
+export interface PageContextEntry {
+  routePattern: string;
+  coordinates: string[];
+  likelyComponents?: string[];
+  layers?: AtlasLayer[];
+}
+
+export interface PageContextMap {
+  pages: PageContextEntry[];
+}

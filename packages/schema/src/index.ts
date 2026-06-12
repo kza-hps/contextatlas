@@ -4,4 +4,6 @@ export type {
   AtlasLayer,
   AtlasLayerDefinition,
   JourneyStep,
+  PageContextEntry,
+  PageContextMap,
 } from "./types.js";
