@@ -48,23 +48,25 @@ export interface AtlasLayerDefinition {
   description: string;
 }
 
-export type AtlasConfig<T extends string = string> = {
+export type AtlasConfig = {
   name: string;
   version: string;
   defaultPublicLayer: AtlasLayer;
   layers: AtlasLayerDefinition[];
-  coordinateFormula?: T;
-} & (T extends "CA:{ORG}:{PROPERTY}:{NODE}"
-  ? {
+} & (
+  | {
+      coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
       organizationCode: string;
       propertyCode: string;
     }
-  : {
+  | {
+      coordinateFormula?: string;
       organizationCode?: string;
       propertyCode?: string;
-    });
+    }
+);
 
-export function defineConfig<const T extends string>(config: AtlasConfig<T>): AtlasConfig<T> {
+export function defineConfig(config: AtlasConfig): AtlasConfig {
   return config;
 }
 
