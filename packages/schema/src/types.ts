@@ -1,6 +1,6 @@
 export type AtlasLayer = "L0" | "L1" | "L2" | "L3" | "L4" | "L5";
 
-export type AtlasCoordinateString = `CA:${string}:${string}:${string}`;
+export type AtlasCoordinateString = `CA:${string}:${string}:${string}` | (string & {});
 
 export interface AtlasCoordinate {
   coordinate: AtlasCoordinateString;
