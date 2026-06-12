@@ -1,6 +1,6 @@
 export type AtlasLayer = "L0" | "L1" | "L2" | "L3" | "L4" | "L5";
 
-export type AtlasCoordinateString = string;
+export type AtlasCoordinateString = `CA:${string}:${string}:${string}`;
 
 export interface AtlasCoordinate {
   coordinate: AtlasCoordinateString;
@@ -50,19 +50,29 @@ export interface AtlasLayerDefinition {
   description: string;
 }
 
-export type AtlasConfig<F extends string = string> = {
+export type AtlasConfig = {
   name: string;
   version: string;
   defaultPublicLayer: AtlasLayer;
   layers: readonly AtlasLayerDefinition[];
-  coordinateFormula?: F;
-} & (F extends "CA:{ORG}:{PROPERTY}:{NODE}"
-  ? { organizationCode: string; propertyCode: string }
-  : { organizationCode?: string; propertyCode?: string });
+} & (
+  | {
+      coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
+      organizationCode: string;
+      propertyCode: string;
+    }
+  | {
+      coordinateFormula?: string;
+      organizationCode?: string;
+      propertyCode?: string;
+    }
+);
 
-export function defineConfig<F extends string = string>(
-  config: AtlasConfig<F>
-): AtlasConfig<F> {
+export function defineConfig<T extends AtlasConfig>(
+  config: T & (T["coordinateFormula"] extends "CA:{ORG}:{PROPERTY}:{NODE}"
+    ? { organizationCode: string; propertyCode: string }
+    : unknown)
+): T {
   return config;
 }
 
