@@ -9,7 +9,7 @@ export function runContextCommand(coordinate?: string): void {
     return;
   }
 
-  const coordinatePattern = /^CA:[A-Z0-9]+:[A-Z0-9]+:[A-Z0-9]+$/i;
+  const coordinatePattern = /^CA:[^:]+:[^:]+:[^:]+$/i;
 
   if (!coordinatePattern.test(trimmed)) {
     console.warn("Warning: Coordinate does not match the standard 'CA:{ORG}:{PROPERTY}:{NODE}' format.");

@@ -19,7 +19,7 @@ export function AtlasPin({
   route,
   layer,
   markerLabel = "Atlas Pin",
-  headingLevel = "h1",
+  headingLevel = "h3",
   className,
   ...headerProps
 }: AtlasPinProps) {
