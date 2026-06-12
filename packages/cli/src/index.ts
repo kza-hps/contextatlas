@@ -7,9 +7,16 @@ import { runGenerateCommand } from "./commands/generate.js";
 import { runInitCommand } from "./commands/init.js";
 import { runScanCommand } from "./commands/scan.js";
 
-const require = createRequire(import.meta.url);
-const packageJson = require("../package.json") as { version: string };
-const version = packageJson.version;
+let version = "0.1.0";
+
+try {
+  const require = createRequire(import.meta.url);
+  const packageJson = require("../package.json") as { version: string };
+  version = packageJson.version;
+} catch {
+  // Keep the CLI usable if package metadata is unavailable in a bundled runtime.
+}
+
 const [, , command, coordinate] = process.argv;
 
 switch (command) {
