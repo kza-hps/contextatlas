@@ -1,7 +1,9 @@
 export type AtlasLayer = "L0" | "L1" | "L2" | "L3" | "L4" | "L5";
 
+export type AtlasCoordinateString = string;
+
 export interface AtlasCoordinate {
-  coordinate: string;
+  coordinate: AtlasCoordinateString;
   aliases?: string[];
   label?: string;
   projectLabel?: string;
@@ -36,7 +38,7 @@ export interface AtlasEvidence {
 
 export interface AtlasEdge {
   type: string;
-  target: string;
+  target: AtlasCoordinateString;
   label?: string;
   confidence?: number;
 }
@@ -66,13 +68,17 @@ export type AtlasConfig = {
     }
 );
 
-export function defineConfig(config: AtlasConfig): AtlasConfig {
+export function defineConfig<T extends AtlasConfig>(
+  config: T & (T["coordinateFormula"] extends "CA:{ORG}:{PROPERTY}:{NODE}"
+    ? { organizationCode: string; propertyCode: string }
+    : unknown)
+): T {
   return config;
 }
 
 export interface AtlasRouteEntry {
   routePattern: string;
-  coordinates: string[];
+  coordinates: AtlasCoordinateString[];
   likelyComponents?: string[];
   layers?: AtlasLayer[];
   evidence?: AtlasEvidence;

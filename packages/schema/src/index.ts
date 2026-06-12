@@ -2,6 +2,7 @@ export type {
   AtlasClassification,
   AtlasConfig,
   AtlasCoordinate,
+  AtlasCoordinateString,
   AtlasEdge,
   AtlasEvidence,
   AtlasLayer,
