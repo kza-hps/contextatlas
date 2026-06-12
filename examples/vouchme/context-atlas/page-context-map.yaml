@@ -1,0 +1,81 @@
+# Initial example page context map only. Placeholder values are not verified production truth.
+pages:
+  - routePattern: /candidate/vouches/new
+    coordinates:
+      - VM.J.CAN.010
+    likelyComponents:
+      - CandidateVouchRequestForm
+      - RefereeInviteFields
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /candidate/vouches/:id
+    coordinates:
+      - VM.J.CAN.020
+    likelyComponents:
+      - CandidateVouchStatus
+      - PendingRefereeInviteCard
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /invite/:token
+    coordinates:
+      - VM.J.REF.025
+    likelyComponents:
+      - RefereeInvitationLanding
+      - InvitationTokenGate
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /respond/:token
+    coordinates:
+      - VM.J.REF.030
+      - VM.J.REF.040
+    likelyComponents:
+      - RefereeQuestionnaire
+      - VouchCompletionHeader
+    layers:
+      - L0
+      - L1
+      - L2
+      - L3
+  - routePattern: /candidate/vouch-id
+    coordinates:
+      - VM.J.CAN.050
+    likelyComponents:
+      - VouchIdCard
+      - SharingControls
+    layers:
+      - L0
+      - L1
+      - L3
+  - routePattern: /recruiter/request-access
+    coordinates:
+      - VM.J.REC.060
+    likelyComponents:
+      - RecruiterAccessRequestForm
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /access-review/:token
+    coordinates:
+      - VM.J.REF.070
+    likelyComponents:
+      - RefereeAccessDecision
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /trusted-signal/:accessId
+    coordinates:
+      - VM.J.REC.080
+    likelyComponents:
+      - TrustedSignalView
+    layers:
+      - L0
+      - L1
+      - L3

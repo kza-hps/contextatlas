@@ -1,0 +1,9 @@
+flowchart LR
+  A["VM.J.CAN.010 /candidate/vouches/new"] --> B["VM.J.CAN.020 /candidate/vouches/:id"]
+  A --> I["VM.J.REF.025 /invite/:token"]
+  I --> C["VM.J.REF.030 /respond/:token"]
+  C --> D["VM.J.REF.040 /vouch/:id/complete"]
+  D --> E["VM.J.CAN.050 /candidate/vouch-id"]
+  E --> F["VM.J.REC.060 /recruiter/request-access"]
+  F --> G["VM.J.REF.070 /access-review/:token"]
+  G --> H["VM.J.REC.080 /trusted-signal/:accessId"]

@@ -1,0 +1,14 @@
+flowchart LR
+  A["draft"] --> B["request_created"]
+  B --> C["invitation_sent"]
+  C --> P["awaiting_referee"]
+  P --> D["response_started"]
+  D --> E["completed"]
+  E --> F["vouch_id_issued"]
+  F --> G["access_requested"]
+  G --> H["access_approved or access_declined"]
+  H --> I["signal_viewed"]
+  N1["referee_invitation_email"] --> C
+  N2["candidate_vouch_completed"] --> E
+  N3["referee_access_request"] --> G
+  N4["recruiter_access_decision"] --> H

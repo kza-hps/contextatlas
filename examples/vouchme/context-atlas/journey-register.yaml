@@ -1,0 +1,270 @@
+# Initial example mappings only. These entries are plausible placeholders and are not verified production truth.
+steps:
+  - id: VM.J.CAN.010
+    title: Candidate creates a vouch request
+    role: candidate
+    journey: candidate-vouch-request
+    stage: request
+    publicLabel: Start a vouch request
+    routePatterns:
+      - /candidate/vouches/new
+      - /vouch/request
+    statuses:
+      - draft
+      - request_created
+    notifications:
+      - referee_invitation_queued
+    tables:
+      - vouch_requests
+      - candidates
+    services:
+      - supabase-auth
+      - supabase-database
+      - resend-email
+    tests:
+      - candidate-can-create-vouch-request.spec.ts
+    aiContext:
+      safeStartingScope:
+        - candidate request form
+        - vouch request creation flow
+      expandOnlyIf:
+        - route ownership is confirmed
+        - database table names are verified
+  - id: VM.J.CAN.020
+    title: Candidate sees referee invitation is pending
+    role: candidate
+    journey: candidate-vouch-request
+    stage: invite
+    publicLabel: Referee invitation pending
+    routePatterns:
+      - /candidate/vouches/:id
+    statuses:
+      - invitation_sent
+      - awaiting_referee
+    notifications:
+      - referee_invitation_email
+    tables:
+      - vouch_requests
+      - referee_invitations
+    services:
+      - resend-email
+      - supabase-database
+    tests:
+      - candidate-invitation-status.spec.ts
+    aiContext:
+      safeStartingScope:
+        - candidate request status card
+        - pending referee invitation state
+      expandOnlyIf:
+        - candidate tracking route is verified
+        - email template source is verified
+  - id: VM.J.REF.025
+    title: Referee receives invitation
+    role: referee
+    journey: referee-response
+    stage: invitation
+    publicLabel: Review vouch invitation
+    routePatterns:
+      - /invite/:token
+    statuses:
+      - invitation_sent
+      - awaiting_referee
+    notifications:
+      - referee_invitation_email
+    tables:
+      - vouch_requests
+      - referee_invitations
+      - referee_profiles
+    services:
+      - resend-email
+      - supabase-database
+    tests:
+      - referee-invitation-landing.spec.ts
+    aiContext:
+      safeStartingScope:
+        - referee invitation landing page
+        - invitation token validation
+      expandOnlyIf:
+        - token validation behavior is located
+        - referee identity assumptions are verified
+  - id: VM.J.REF.030
+    title: Referee answers structured questions
+    role: referee
+    journey: referee-response
+    stage: response
+    publicLabel: Answer structured questions
+    routePatterns:
+      - /referee/vouches/:id
+      - /respond/:token
+    statuses:
+      - response_started
+      - response_in_progress
+    notifications:
+      - candidate_response_started
+    tables:
+      - vouch_responses
+      - vouch_questions
+      - referee_profiles
+    services:
+      - supabase-database
+      - supabase-auth
+    tests:
+      - referee-response-form.spec.ts
+    aiContext:
+      safeStartingScope:
+        - referee response form
+        - structured question schema
+      expandOnlyIf:
+        - question source is confirmed
+        - save behavior is verified
+  - id: VM.J.REF.040
+    title: Vouch is completed
+    role: referee
+    journey: referee-response
+    stage: completion
+    publicLabel: Your vouch is complete
+    routePatterns:
+      - /referee/vouches/:id/complete
+      - /vouch/:id/complete
+    statuses:
+      - completed
+      - pending_candidate_review
+    notifications:
+      - candidate_vouch_completed
+    tables:
+      - vouch_responses
+      - vouch_requests
+      - audit_events
+    services:
+      - supabase-database
+      - resend-email
+    tests:
+      - vouch-completion.spec.ts
+    aiContext:
+      safeStartingScope:
+        - completion page
+        - completion status transition
+      expandOnlyIf:
+        - notification side effects are confirmed
+        - audit event behavior is located
+  - id: VM.J.CAN.050
+    title: Candidate receives reusable Vouch ID
+    role: candidate
+    journey: candidate-vouch-id
+    stage: identity
+    publicLabel: Receive reusable Vouch ID
+    routePatterns:
+      - /candidate/vouch-id
+      - /candidate/profile
+    statuses:
+      - vouch_id_issued
+      - reusable_signal_ready
+    notifications:
+      - candidate_vouch_id_ready
+    tables:
+      - candidates
+      - vouch_ids
+      - vouch_responses
+    services:
+      - supabase-database
+      - resend-email
+    tests:
+      - candidate-vouch-id.spec.ts
+    aiContext:
+      safeStartingScope:
+        - Vouch ID display
+        - candidate dashboard card
+      expandOnlyIf:
+        - identity model is verified
+        - sharing rules are confirmed
+  - id: VM.J.REC.060
+    title: Recruiter requests access
+    role: recruiter
+    journey: recruiter-access
+    stage: access-request
+    publicLabel: Request access to a trusted signal
+    routePatterns:
+      - /recruiter/request-access
+      - /vouch/:vouchId/access
+    statuses:
+      - access_requested
+      - awaiting_referee_decision
+    notifications:
+      - referee_access_request
+    tables:
+      - access_requests
+      - recruiters
+      - vouch_ids
+    services:
+      - supabase-database
+      - resend-email
+    tests:
+      - recruiter-access-request.spec.ts
+    aiContext:
+      safeStartingScope:
+        - recruiter access request form
+        - access request record
+      expandOnlyIf:
+        - recruiter identity flow is verified
+        - permission rules are located
+  - id: VM.J.REF.070
+    title: Referee approves or declines access
+    role: referee
+    journey: access-approval
+    stage: decision
+    publicLabel: Approve or decline access
+    routePatterns:
+      - /referee/access-requests/:id
+      - /access-review/:token
+    statuses:
+      - access_approved
+      - access_declined
+    notifications:
+      - recruiter_access_decision
+      - candidate_access_decision
+    tables:
+      - access_requests
+      - referee_profiles
+      - audit_events
+    services:
+      - supabase-database
+      - resend-email
+    tests:
+      - referee-access-decision.spec.ts
+    aiContext:
+      safeStartingScope:
+        - referee access decision screen
+        - approve decline actions
+      expandOnlyIf:
+        - consent model is verified
+        - notification recipients are confirmed
+  - id: VM.J.REC.080
+    title: Recruiter views trusted signal
+    role: recruiter
+    journey: recruiter-signal-view
+    stage: signal-view
+    publicLabel: View trusted signal
+    routePatterns:
+      - /recruiter/vouches/:id
+      - /trusted-signal/:accessId
+    statuses:
+      - access_granted
+      - signal_viewed
+    notifications:
+      - candidate_signal_viewed
+    tables:
+      - access_requests
+      - vouch_responses
+      - signal_views
+    services:
+      - supabase-database
+      - supabase-auth
+    tests:
+      - recruiter-trusted-signal.spec.ts
+    aiContext:
+      safeStartingScope:
+        - recruiter signal page
+        - access-controlled view
+      expandOnlyIf:
+        - redaction rules are verified
+        - historical access behavior is confirmed

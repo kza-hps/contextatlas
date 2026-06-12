@@ -1,0 +1,44 @@
+{
+  "name": "VouchMe ContextAtlas",
+  "version": "0.1.0",
+  "coordinatePrefix": "VM",
+  "defaultPublicLayer": "L0",
+  "layers": [
+    {
+      "id": "L0",
+      "name": "Surface layer",
+      "visibility": "public",
+      "description": "User-facing journey, copy, page meaning, public diagram"
+    },
+    {
+      "id": "L1",
+      "name": "Page layer",
+      "visibility": "app",
+      "description": "Routes, pages, components, layouts"
+    },
+    {
+      "id": "L2",
+      "name": "Workflow layer",
+      "visibility": "internal",
+      "description": "Statuses, events, notifications, access states"
+    },
+    {
+      "id": "L3",
+      "name": "Data layer",
+      "visibility": "internal",
+      "description": "Database tables, storage, auth, records, policies"
+    },
+    {
+      "id": "L4",
+      "name": "Integration layer",
+      "visibility": "internal",
+      "description": "External services, webhooks, APIs, platform infrastructure"
+    },
+    {
+      "id": "L5",
+      "name": "AI and operations layer",
+      "visibility": "internal",
+      "description": "Tests, prompts, context packs, UAT, agent instructions"
+    }
+  ]
+}
