@@ -10,6 +10,26 @@ pages:
       - L0
       - L1
       - L2
+  - routePattern: /candidate/vouches/:id
+    coordinates:
+      - VM.J.CAN.020
+    likelyComponents:
+      - CandidateVouchStatus
+      - PendingRefereeInviteCard
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /invite/:token
+    coordinates:
+      - VM.J.REF.025
+    likelyComponents:
+      - RefereeInvitationLanding
+      - InvitationTokenGate
+    layers:
+      - L0
+      - L1
+      - L2
   - routePattern: /respond/:token
     coordinates:
       - VM.J.REF.030

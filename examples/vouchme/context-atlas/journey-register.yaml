@@ -31,14 +31,13 @@ steps:
         - route ownership is confirmed
         - database table names are verified
   - id: VM.J.CAN.020
-    title: Referee receives invitation
+    title: Candidate sees referee invitation is pending
     role: candidate
     journey: candidate-vouch-request
     stage: invite
-    publicLabel: Referee receives invitation
+    publicLabel: Referee invitation pending
     routePatterns:
       - /candidate/vouches/:id
-      - /invite/:token
     statuses:
       - invitation_sent
       - awaiting_referee
@@ -51,14 +50,43 @@ steps:
       - resend-email
       - supabase-database
     tests:
-      - referee-invitation-email.spec.ts
+      - candidate-invitation-status.spec.ts
     aiContext:
       safeStartingScope:
-        - invitation copy
-        - invitation token handling
+        - candidate request status card
+        - pending referee invitation state
+      expandOnlyIf:
+        - candidate tracking route is verified
+        - email template source is verified
+  - id: VM.J.REF.025
+    title: Referee receives invitation
+    role: referee
+    journey: referee-response
+    stage: invitation
+    publicLabel: Review vouch invitation
+    routePatterns:
+      - /invite/:token
+    statuses:
+      - invitation_sent
+      - awaiting_referee
+    notifications:
+      - referee_invitation_email
+    tables:
+      - vouch_requests
+      - referee_invitations
+      - referee_profiles
+    services:
+      - resend-email
+      - supabase-database
+    tests:
+      - referee-invitation-landing.spec.ts
+    aiContext:
+      safeStartingScope:
+        - referee invitation landing page
+        - invitation token validation
       expandOnlyIf:
         - token validation behavior is located
-        - email template source is verified
+        - referee identity assumptions are verified
   - id: VM.J.REF.030
     title: Referee answers structured questions
     role: referee

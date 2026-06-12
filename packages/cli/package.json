@@ -12,5 +12,8 @@
     "build": "tsc -b",
     "typecheck": "tsc -b --pretty",
     "lint": "npm run typecheck"
+  },
+  "dependencies": {
+    "@contextatlas/schema": "^0.1.0"
   }
 }

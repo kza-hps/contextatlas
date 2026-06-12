@@ -1,7 +1,8 @@
 flowchart LR
   A["draft"] --> B["request_created"]
   B --> C["invitation_sent"]
-  C --> D["response_started"]
+  C --> P["awaiting_referee"]
+  P --> D["response_started"]
   D --> E["completed"]
   E --> F["vouch_id_issued"]
   F --> G["access_requested"]

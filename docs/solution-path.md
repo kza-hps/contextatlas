@@ -97,3 +97,5 @@ Packaging too early would add complexity around installers, updates, permissions
 ## Product Principle
 
 Build the map engine first. Expose it through the CLI. Make it agent-readable through MCP. Add UI once the underlying coordinate system is useful.
+
+The coordinate system itself needs a compact algorithm that can scale without hand-authored sprawl. See [coordinate-algorithm.md](./coordinate-algorithm.md) for the current working rule and open design questions.
