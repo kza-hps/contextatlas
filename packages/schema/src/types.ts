@@ -48,15 +48,23 @@ export interface AtlasLayerDefinition {
   description: string;
 }
 
-export interface AtlasConfig {
+export type AtlasConfig = {
   name: string;
   version: string;
-  coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}" | (string & {});
-  organizationCode?: string;
-  propertyCode?: string;
   defaultPublicLayer: AtlasLayer;
   layers: AtlasLayerDefinition[];
-}
+} & (
+  | {
+      coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
+      organizationCode: string;
+      propertyCode: string;
+    }
+  | {
+      coordinateFormula: string & {};
+      organizationCode?: string;
+      propertyCode?: string;
+    }
+);
 
 export interface AtlasRouteEntry {
   routePattern: string;

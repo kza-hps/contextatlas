@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { useId } from "react";
+import type { AtlasLayer } from "@contextatlas/schema";
 
 export type AtlasPinHeadingLevel = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
@@ -7,7 +8,7 @@ export interface AtlasPinProps extends Omit<ComponentPropsWithoutRef<"header">, 
   coordinate: string;
   label: string;
   route?: string;
-  layer?: string;
+  layer?: AtlasLayer;
   markerLabel?: string;
   headingLevel?: AtlasPinHeadingLevel;
 }

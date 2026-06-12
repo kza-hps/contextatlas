@@ -19,6 +19,9 @@
   "peerDependencies": {
     "react": ">=18"
   },
+  "dependencies": {
+    "@contextatlas/schema": "^0.1.0"
+  },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "react": "^19.0.0"
