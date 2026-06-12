@@ -5,7 +5,7 @@ import process from "node:process";
 import { runContextCommand } from "./commands/context.js";
 import { runGenerateCommand } from "./commands/generate.js";
 import { runInitCommand } from "./commands/init.js";
-import { runScanCommand } from "./commands/scan.js";
+import { runDiscoverCommand } from "./commands/discover.js";
 
 let version = "0.1.0";
 
@@ -24,7 +24,14 @@ switch (command) {
     runInitCommand();
     break;
   case "scan":
-    runScanCommand();
+  case "discover":
+    runDiscoverCommand(command);
+    break;
+  case "classify":
+    console.log("ContextAtlas classify: evidence-based classifier not implemented yet.");
+    break;
+  case "resolve":
+    console.log("ContextAtlas resolve: URL, page, or file resolver not implemented yet.");
     break;
   case "generate":
     runGenerateCommand();
@@ -53,8 +60,13 @@ function printHelp(): void {
 
 Usage:
   contextatlas init
-  contextatlas scan
+  contextatlas discover
+  contextatlas classify
   contextatlas generate
+  contextatlas resolve <url-or-coordinate>
   contextatlas context <coordinate>
+
+Aliases:
+  contextatlas scan
 `);
 }

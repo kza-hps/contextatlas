@@ -1,0 +1,341 @@
+# Example implementation only. This is not the ContextAtlas ontology.
+# VouchMe-specific terms are aliases, labels, classifications, and evidence.
+nodes:
+  - coordinate: CA:KZA:VOUCHME:N00010
+    aliases:
+      - VM.J.CAN.010
+    label: Candidate creates a vouch request
+    classification:
+      property: trust-signal-app
+      surface: request-form
+      actor: candidate
+      intent: request-reference
+      state: draft
+      layer: L0
+      confidence: 0.62
+    evidence:
+      routes:
+        - /candidate/vouches/new
+        - /vouch/request
+      headings:
+        - Start a vouch request
+      statuses:
+        - draft
+        - request_created
+      notifications:
+        - referee_invitation_queued
+      tables:
+        - vouch_requests
+        - candidates
+      services:
+        - supabase-auth
+        - supabase-database
+        - resend-email
+      tests:
+        - candidate-can-create-vouch-request.spec.ts
+      notes:
+        - Plausible placeholder; not verified against production.
+    relationships:
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00020
+        label: Invitation status becomes visible
+        confidence: 0.55
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00025
+        label: Referee receives invitation
+        confidence: 0.55
+
+  - coordinate: CA:KZA:VOUCHME:N00020
+    aliases:
+      - VM.J.CAN.020
+    label: Candidate sees referee invitation is pending
+    classification:
+      property: trust-signal-app
+      surface: status-view
+      actor: candidate
+      intent: track-request
+      state: awaiting-referee
+      layer: L0
+      confidence: 0.6
+    evidence:
+      routes:
+        - /candidate/vouches/:id
+      headings:
+        - Referee invitation pending
+      statuses:
+        - invitation_sent
+        - awaiting_referee
+      notifications:
+        - referee_invitation_email
+      tables:
+        - vouch_requests
+        - referee_invitations
+      services:
+        - resend-email
+        - supabase-database
+      tests:
+        - candidate-invitation-status.spec.ts
+      notes:
+        - Candidate wording is project evidence, not global vocabulary.
+
+  - coordinate: CA:KZA:VOUCHME:N00025
+    aliases:
+      - VM.J.REF.025
+    label: Referee receives invitation
+    classification:
+      property: trust-signal-app
+      surface: token-entry
+      actor: referee
+      intent: review-invitation
+      state: invited
+      layer: L0
+      confidence: 0.58
+    evidence:
+      routes:
+        - /invite/:token
+      headings:
+        - Review vouch invitation
+      statuses:
+        - invitation_sent
+        - awaiting_referee
+      notifications:
+        - referee_invitation_email
+      tables:
+        - vouch_requests
+        - referee_invitations
+        - referee_profiles
+      services:
+        - resend-email
+        - supabase-database
+      tests:
+        - referee-invitation-landing.spec.ts
+    relationships:
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00030
+        label: Referee starts response
+        confidence: 0.55
+
+  - coordinate: CA:KZA:VOUCHME:N00030
+    aliases:
+      - VM.J.REF.030
+    label: Referee answers structured questions
+    classification:
+      property: trust-signal-app
+      surface: questionnaire
+      actor: referee
+      intent: provide-reference
+      state: in-progress
+      layer: L0
+      confidence: 0.59
+    evidence:
+      routes:
+        - /referee/vouches/:id
+        - /respond/:token
+      headings:
+        - Answer structured questions
+      statuses:
+        - response_started
+        - response_in_progress
+      notifications:
+        - candidate_response_started
+      tables:
+        - vouch_responses
+        - vouch_questions
+        - referee_profiles
+      services:
+        - supabase-database
+        - supabase-auth
+      tests:
+        - referee-response-form.spec.ts
+    relationships:
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00040
+        label: Response submitted
+        confidence: 0.57
+
+  - coordinate: CA:KZA:VOUCHME:N00040
+    aliases:
+      - VM.J.REF.040
+    label: Vouch is completed
+    classification:
+      property: trust-signal-app
+      surface: completion-view
+      actor: referee
+      intent: confirm-submission
+      state: completed
+      layer: L0
+      confidence: 0.61
+    evidence:
+      routes:
+        - /referee/vouches/:id/complete
+        - /vouch/:id/complete
+        - /respond/:token
+      headings:
+        - Your vouch is complete
+      statuses:
+        - completed
+        - pending_candidate_review
+      notifications:
+        - candidate_vouch_completed
+      tables:
+        - vouch_responses
+        - vouch_requests
+        - audit_events
+      services:
+        - supabase-database
+        - resend-email
+      tests:
+        - vouch-completion.spec.ts
+    relationships:
+      - type: notifies
+        target: CA:KZA:VOUCHME:N00050
+        label: Candidate sees reusable signal
+        confidence: 0.54
+
+  - coordinate: CA:KZA:VOUCHME:N00050
+    aliases:
+      - VM.J.CAN.050
+      - Candidate completed vouch
+    label: Candidate receives reusable Vouch ID
+    classification:
+      property: trust-signal-app
+      surface: identity-card
+      actor: candidate
+      intent: review-share
+      state: completed
+      layer: L0
+      confidence: 0.6
+    evidence:
+      routes:
+        - /candidate/vouch-id
+        - /candidate/profile
+      headings:
+        - Receive reusable Vouch ID
+      statuses:
+        - vouch_id_issued
+        - reusable_signal_ready
+      notifications:
+        - candidate_vouch_id_ready
+      tables:
+        - candidates
+        - vouch_ids
+        - vouch_responses
+      services:
+        - supabase-database
+        - resend-email
+      tests:
+        - candidate-vouch-id.spec.ts
+    relationships:
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00060
+        label: Recruiter requests access
+        confidence: 0.55
+
+  - coordinate: CA:KZA:VOUCHME:N00060
+    aliases:
+      - VM.J.REC.060
+    label: Recruiter requests access
+    classification:
+      property: trust-signal-app
+      surface: access-request-form
+      actor: recruiter
+      intent: request-access
+      state: requested
+      layer: L0
+      confidence: 0.58
+    evidence:
+      routes:
+        - /recruiter/request-access
+        - /vouch/:vouchId/access
+      headings:
+        - Request access to a trusted signal
+      statuses:
+        - access_requested
+        - awaiting_referee_decision
+      notifications:
+        - referee_access_request
+      tables:
+        - access_requests
+        - recruiters
+        - vouch_ids
+      services:
+        - supabase-database
+        - resend-email
+      tests:
+        - recruiter-access-request.spec.ts
+    relationships:
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00070
+        label: Access request requires decision
+        confidence: 0.56
+
+  - coordinate: CA:KZA:VOUCHME:N00070
+    aliases:
+      - VM.J.REF.070
+    label: Referee approves or declines access
+    classification:
+      property: trust-signal-app
+      surface: decision-view
+      actor: referee
+      intent: decide-access
+      state: decision-pending
+      layer: L0
+      confidence: 0.57
+    evidence:
+      routes:
+        - /referee/access-requests/:id
+        - /access-review/:token
+      headings:
+        - Approve or decline access
+      statuses:
+        - access_approved
+        - access_declined
+      notifications:
+        - recruiter_access_decision
+        - candidate_access_decision
+      tables:
+        - access_requests
+        - referee_profiles
+        - audit_events
+      services:
+        - supabase-database
+        - resend-email
+      tests:
+        - referee-access-decision.spec.ts
+    relationships:
+      - type: grants-access-to
+        target: CA:KZA:VOUCHME:N00080
+        confidence: 0.53
+
+  - coordinate: CA:KZA:VOUCHME:N00080
+    aliases:
+      - VM.J.REC.080
+    label: Recruiter views trusted signal
+    classification:
+      property: trust-signal-app
+      surface: gated-signal-view
+      actor: recruiter
+      intent: inspect-signal
+      state: access-granted
+      layer: L0
+      confidence: 0.58
+    evidence:
+      routes:
+        - /recruiter/vouches/:id
+        - /trusted-signal/:accessId
+      headings:
+        - View trusted signal
+      statuses:
+        - access_granted
+        - signal_viewed
+      notifications:
+        - candidate_signal_viewed
+      tables:
+        - access_requests
+        - vouch_responses
+        - signal_views
+      services:
+        - supabase-database
+        - supabase-auth
+      tests:
+        - recruiter-trusted-signal.spec.ts

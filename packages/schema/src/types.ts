@@ -1,30 +1,46 @@
 export type AtlasLayer = "L0" | "L1" | "L2" | "L3" | "L4" | "L5";
 
+export type AtlasCoordinateString = `CA:${string}:${string}:${string}`;
+
 export interface AtlasCoordinate {
-  id: string;
-  title: string;
-  role?: string;
-  journey?: string;
-  layerVisibility?: AtlasLayer[];
+  coordinate: AtlasCoordinateString;
+  aliases?: readonly string[];
+  label?: string;
+  projectLabel?: string;
+  classification?: AtlasClassification;
+  evidence?: AtlasEvidence;
+  relationships?: readonly AtlasEdge[];
 }
 
-export interface JourneyStep {
-  id: string;
-  title: string;
-  role: string;
-  journey: string;
-  stage: string;
-  publicLabel: string;
-  routePatterns?: string[];
-  statuses?: string[];
-  notifications?: string[];
-  tables?: string[];
-  services?: string[];
-  tests?: string[];
-  aiContext?: {
-    safeStartingScope?: string[];
-    expandOnlyIf?: string[];
-  };
+export interface AtlasClassification {
+  property?: string;
+  surface?: string;
+  actor?: string;
+  intent?: string;
+  state?: string;
+  layer?: AtlasLayer;
+  dependencyType?: string;
+  confidence?: number;
+}
+
+export interface AtlasEvidence {
+  routes?: readonly string[];
+  files?: readonly string[];
+  headings?: readonly string[];
+  imports?: readonly string[];
+  statuses?: readonly string[];
+  notifications?: readonly string[];
+  tables?: readonly string[];
+  services?: readonly string[];
+  tests?: readonly string[];
+  notes?: readonly string[];
+}
+
+export interface AtlasEdge {
+  type: string;
+  target: AtlasCoordinateString;
+  label?: string;
+  confidence?: number;
 }
 
 export interface AtlasLayerDefinition {
@@ -37,18 +53,25 @@ export interface AtlasLayerDefinition {
 export interface AtlasConfig {
   name: string;
   version: string;
-  coordinatePrefix: string;
   defaultPublicLayer: AtlasLayer;
-  layers: AtlasLayerDefinition[];
+  layers: readonly AtlasLayerDefinition[];
+  coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
+  organizationCode: string;
+  propertyCode: string;
 }
 
-export interface PageContextEntry {
+export function defineConfig<const T extends AtlasConfig>(config: T): T {
+  return config;
+}
+
+export interface AtlasRouteEntry {
   routePattern: string;
-  coordinates: string[];
-  likelyComponents?: string[];
-  layers?: AtlasLayer[];
+  coordinates: readonly AtlasCoordinateString[];
+  likelyComponents?: readonly string[];
+  layers?: readonly AtlasLayer[];
+  evidence?: AtlasEvidence;
 }
 
-export interface PageContextMap {
-  pages: PageContextEntry[];
+export interface AtlasRouteMap {
+  routes: readonly AtlasRouteEntry[];
 }

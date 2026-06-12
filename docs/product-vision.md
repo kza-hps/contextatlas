@@ -1,45 +1,91 @@
 # ContextAtlas Product Vision
 
-**Tagline:** Map the user journey. Trace the code beneath it.
+**Tagline:** Discover topology. Classify meaning. Generate layered maps.
 
-ContextAtlas is a repo-native journey and architecture mapping toolkit for AI-assisted software teams. It connects product experiences to the pages, components, statuses, data, integrations, tests, and AI development context that support them.
+ContextAtlas is a generic, repo-native topology discovery and classification engine for AI-assisted software teams. It can be pointed at an active repo or website, discover its surfaces and dependencies, classify nodes and edges from evidence, assign stable coordinates, and generate maps that connect experience, code, data, integrations, tests, and AI context.
 
-## Context Inversion
+## Core Product
 
-Most software work starts from the implementation layer: files, routes, database tables, tests, and tickets. Humans and AI agents then have to infer which user journey those implementation details belong to.
+ContextAtlas is not a catalogue of every possible page type, journey type, actor, workflow, or site category. It owns the algorithm:
 
-ContextAtlas inverts that lookup. A team starts with a user-facing coordinate, such as `VM.J.CAN.040`, and follows it downward into the code and operational context beneath it.
+1. Discover topology
+2. Extract signals
+3. Build graph
+4. Classify facets
+5. Assign or reuse stable coordinates
+6. Generate layer views
+7. Queue uncertain mappings for human review
 
-The result is a shared map that can be read by product people, designers, engineers, testers, admins, and AI coding agents at the right depth for their role.
+Project-specific language emerges from evidence and review. A customer can call something a candidate journey, checkout flow, onboarding task, admin surface, webhook, or support operation without requiring ContextAtlas to encode those words as a global ontology.
+
+## Classification Axes
+
+The stable axes are questions ContextAtlas asks, not fixed lists of allowed answers:
+
+- Property: what kind of repo, site, app, or system is being mapped?
+- Surface: what kind of visible or addressable surface was discovered?
+- Actor: who or what experiences, operates, or triggers this node?
+- Intent: what is this node trying to help the actor do?
+- State: what condition can this node or process be in?
+- Layer: at what depth is this node visible or operating?
+- Dependency: what does this node rely on?
+- Edge: how does this node connect to other nodes?
+
+## Coordinate Model
+
+Coordinates are stable neutral addresses:
+
+```txt
+CA:{ORG}:{PROPERTY}:{NODE}
+```
+
+Example:
+
+```txt
+CA:KZA:VOUCHME:N00042
+```
+
+The coordinate should not describe the journey. Meaning belongs in metadata: aliases, labels, classifications, evidence, and relationships.
 
 ## Layer Model
 
-ContextAtlas uses six layers:
+ContextAtlas uses six generic layers:
 
-- `L0` Surface layer: user-facing journey, public copy, and page meaning.
-- `L1` Page layer: routes, pages, components, and layouts.
-- `L2` Workflow layer: statuses, events, notifications, and access states.
-- `L3` Data layer: database tables, storage, auth, records, and policies.
-- `L4` Integration layer: external services, webhooks, APIs, and platform infrastructure.
-- `L5` AI and operations layer: tests, prompts, context packs, UAT notes, and agent instructions.
+- `L0` Surface layer: user-facing meaning, public journeys, visible copy, external explanation.
+- `L1` Page/interface layer: routes, pages, components, layouts, UI entry points.
+- `L2` Workflow layer: statuses, events, permissions, notifications, business logic.
+- `L3` Data layer: database tables, records, storage, auth, policies, data models.
+- `L4` Integration/platform layer: external APIs, platform services, webhooks, deployment, infrastructure.
+- `L5` AI/operations layer: tests, context packs, prompts, UAT notes, agent instructions, operational runbooks.
+
+## Atlas Pins And Waypoints
+
+Atlas Pins are copyable page markers attached to live app surfaces. A header, dashboard card, modal, route, or admin view can expose a marker such as:
+
+```txt
+Atlas Pin
+Coordinate: CA:KZA:VOUCHME:N00042
+Route: /vouches/[id]?view=candidate
+Layer: L0
+Label: Candidate receives completed Vouch ID
+```
+
+The user should not need to know coordinates manually. They should be able to provide a URL and ask what ContextAtlas coordinates apply, or copy a marker from the page.
+
+Waypoints are human-friendly markers over the same neutral coordinate graph. They can use project language, but they do not replace coordinates.
 
 ## Shareable Diagrams
 
-Each layer can be rendered as a shareable diagram. Public stakeholders can see `L0` without exposing implementation details. Admins, engineers, and agents can inspect deeper layers when their work requires it.
+The same coordinate system should support marketing, product, engineering, support, and AI coding agents without exposing unnecessary depth. Diagrams can be exported or shared by layer:
 
-## Atlas Pins and Waypoints
+- `L0` only: marketing, copy, journey narrative.
+- `L1` only: product, page, route, and interface planning.
+- `L2` only: workflow, status, permission, and notification logic.
+- `L3` only: data and storage architecture.
+- `L4` only: integration and platform architecture.
+- `L5` only: AI, dev, test, and operations context.
+- Full stack: all layers connected by coordinates.
 
-Atlas Pins are copyable page markers attached to live app surfaces. A header, dashboard card, modal, or admin view can expose a coordinate that identifies the current journey location.
+## First Worked Example
 
-Waypoints extend that idea across a full journey. They help answer questions like:
-
-- Where is the user right now?
-- Which role is this view serving?
-- Which records, services, and tests protect this path?
-- What is the safe starting scope for an AI coding agent?
-
-## First Customer
-
-VouchMe is the first customer-shaped implementation. Its role-aware journeys make it a strong example for ContextAtlas because the same historical record may be viewed by candidates, referees, recruiters, admins, and developers at different depths.
-
-ContextAtlas must stay generic and reusable while using VouchMe to prove the first workflows.
+VouchMe is the first customer-shaped example. It is useful because the same trust record may be viewed by different actors at different layers. That makes it a good proving ground for classification and coordinates, but it is not the ContextAtlas ontology.

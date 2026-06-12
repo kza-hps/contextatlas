@@ -1,44 +1,46 @@
 {
   "name": "VouchMe ContextAtlas",
   "version": "0.1.0",
-  "coordinatePrefix": "VM",
+  "coordinateFormula": "CA:{ORG}:{PROPERTY}:{NODE}",
+  "organizationCode": "KZA",
+  "propertyCode": "VOUCHME",
   "defaultPublicLayer": "L0",
   "layers": [
     {
       "id": "L0",
       "name": "Surface layer",
       "visibility": "public",
-      "description": "User-facing journey, copy, page meaning, public diagram"
+      "description": "User-facing meaning, visible copy, external explanation"
     },
     {
       "id": "L1",
-      "name": "Page layer",
+      "name": "Page/interface layer",
       "visibility": "app",
-      "description": "Routes, pages, components, layouts"
+      "description": "Routes, pages, components, layouts, UI entry points"
     },
     {
       "id": "L2",
       "name": "Workflow layer",
       "visibility": "internal",
-      "description": "Statuses, events, notifications, access states"
+      "description": "Statuses, events, permissions, notifications, business logic"
     },
     {
       "id": "L3",
       "name": "Data layer",
       "visibility": "internal",
-      "description": "Database tables, storage, auth, records, policies"
+      "description": "Database tables, records, storage, auth, policies, data models"
     },
     {
       "id": "L4",
-      "name": "Integration layer",
+      "name": "Integration/platform layer",
       "visibility": "internal",
-      "description": "External services, webhooks, APIs, platform infrastructure"
+      "description": "External APIs, platform services, webhooks, deployment, infrastructure"
     },
     {
       "id": "L5",
-      "name": "AI and operations layer",
+      "name": "AI/operations layer",
       "visibility": "internal",
-      "description": "Tests, prompts, context packs, UAT, agent instructions"
+      "description": "Tests, context packs, prompts, UAT notes, agent instructions, operational runbooks"
     }
   ]
 }

@@ -1,2 +1,2 @@
-export { JourneyHeader } from "./JourneyHeader.js";
-export type { JourneyHeaderHeadingLevel, JourneyHeaderProps } from "./JourneyHeader.js";
+export { AtlasPin } from "./AtlasPin.js";
+export type { AtlasPinHeadingLevel, AtlasPinProps } from "./AtlasPin.js";

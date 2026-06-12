@@ -1,3 +1,3 @@
 export function runInitCommand(): void {
-  console.log("ContextAtlas init: project initializer not implemented yet.");
+  console.log("ContextAtlas init: atlas workspace initializer not implemented yet.");
 }

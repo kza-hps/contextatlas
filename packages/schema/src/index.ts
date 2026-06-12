@@ -1,9 +1,14 @@
 export type {
+  AtlasClassification,
   AtlasConfig,
   AtlasCoordinate,
+  AtlasCoordinateString,
+  AtlasEdge,
+  AtlasEvidence,
   AtlasLayer,
   AtlasLayerDefinition,
-  JourneyStep,
-  PageContextEntry,
-  PageContextMap,
+  AtlasRouteEntry,
+  AtlasRouteMap,
 } from "./types.js";
+
+export { defineConfig } from "./types.js";

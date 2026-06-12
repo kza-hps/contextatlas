@@ -2,7 +2,7 @@
   "name": "contextatlas",
   "version": "0.1.0",
   "private": true,
-  "description": "Repo-native journey and architecture mapping toolkit for AI-assisted software teams.",
+  "description": "Repo-native topology discovery and classification toolkit for AI-assisted software teams.",
   "workspaces": [
     "packages/*"
   ],
