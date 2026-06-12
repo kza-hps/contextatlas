@@ -60,7 +60,7 @@ export type AtlasConfig = {
       propertyCode: string;
     }
   | {
-      coordinateFormula: string & {};
+      coordinateFormula: Exclude<string, "CA:{ORG}:{PROPERTY}:{NODE}">;
       organizationCode?: string;
       propertyCode?: string;
     }
