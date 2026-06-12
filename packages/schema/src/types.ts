@@ -4,12 +4,12 @@ export type AtlasCoordinateString = string;
 
 export interface AtlasCoordinate {
   coordinate: AtlasCoordinateString;
-  aliases?: string[];
+  aliases?: readonly string[];
   label?: string;
   projectLabel?: string;
   classification?: AtlasClassification;
   evidence?: AtlasEvidence;
-  relationships?: AtlasEdge[];
+  relationships?: readonly AtlasEdge[];
 }
 
 export interface AtlasClassification {
@@ -24,16 +24,16 @@ export interface AtlasClassification {
 }
 
 export interface AtlasEvidence {
-  routes?: string[];
-  files?: string[];
-  headings?: string[];
-  imports?: string[];
-  statuses?: string[];
-  notifications?: string[];
-  tables?: string[];
-  services?: string[];
-  tests?: string[];
-  notes?: string[];
+  routes?: readonly string[];
+  files?: readonly string[];
+  headings?: readonly string[];
+  imports?: readonly string[];
+  statuses?: readonly string[];
+  notifications?: readonly string[];
+  tables?: readonly string[];
+  services?: readonly string[];
+  tests?: readonly string[];
+  notes?: readonly string[];
 }
 
 export interface AtlasEdge {
@@ -54,7 +54,7 @@ export type AtlasConfig = {
   name: string;
   version: string;
   defaultPublicLayer: AtlasLayer;
-  layers: AtlasLayerDefinition[];
+  layers: readonly AtlasLayerDefinition[];
 } & (
   | {
       coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
@@ -78,12 +78,12 @@ export function defineConfig<T extends AtlasConfig>(
 
 export interface AtlasRouteEntry {
   routePattern: string;
-  coordinates: AtlasCoordinateString[];
-  likelyComponents?: string[];
-  layers?: AtlasLayer[];
+  coordinates: readonly AtlasCoordinateString[];
+  likelyComponents?: readonly string[];
+  layers?: readonly AtlasLayer[];
   evidence?: AtlasEvidence;
 }
 
 export interface AtlasRouteMap {
-  routes: AtlasRouteEntry[];
+  routes: readonly AtlasRouteEntry[];
 }
