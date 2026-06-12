@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import process from "node:process";
 import { runContextCommand } from "./commands/context.js";
 import { runGenerateCommand } from "./commands/generate.js";
 import { runInitCommand } from "./commands/init.js";

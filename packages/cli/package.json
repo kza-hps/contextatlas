@@ -13,6 +13,10 @@
     "typecheck": "tsc -b --pretty",
     "lint": "npm run typecheck"
   },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  },
   "dependencies": {
     "@contextatlas/schema": "^0.1.0"
   }
