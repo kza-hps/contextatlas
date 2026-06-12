@@ -50,7 +50,7 @@ export interface AtlasLayerDefinition {
   description: string;
 }
 
-export type AtlasConfig<F extends string = "CA:{ORG}:{PROPERTY}:{NODE}" | (string & {})> = {
+export type AtlasConfig<F extends string = string> = {
   name: string;
   version: string;
   defaultPublicLayer: AtlasLayer;
@@ -60,7 +60,7 @@ export type AtlasConfig<F extends string = "CA:{ORG}:{PROPERTY}:{NODE}" | (strin
   ? { organizationCode: string; propertyCode: string }
   : { organizationCode?: string; propertyCode?: string });
 
-export function defineConfig<F extends string = "CA:{ORG}:{PROPERTY}:{NODE}" | (string & {})>(
+export function defineConfig<F extends string = string>(
   config: AtlasConfig<F>
 ): AtlasConfig<F> {
   return config;
