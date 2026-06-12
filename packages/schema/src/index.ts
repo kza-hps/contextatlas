@@ -9,3 +9,5 @@ export type {
   AtlasRouteEntry,
   AtlasRouteMap,
 } from "./types.js";
+
+export { defineConfig } from "./types.js";

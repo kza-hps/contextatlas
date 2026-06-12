@@ -48,23 +48,25 @@ export interface AtlasLayerDefinition {
   description: string;
 }
 
-export type AtlasConfig = {
+export type AtlasConfig<T extends string = string> = {
   name: string;
   version: string;
   defaultPublicLayer: AtlasLayer;
   layers: AtlasLayerDefinition[];
-} & (
-  | {
-      coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
+  coordinateFormula?: T;
+} & (T extends "CA:{ORG}:{PROPERTY}:{NODE}"
+  ? {
       organizationCode: string;
       propertyCode: string;
     }
-  | {
-      coordinateFormula: Exclude<string, "CA:{ORG}:{PROPERTY}:{NODE}">;
+  : {
       organizationCode?: string;
       propertyCode?: string;
-    }
-);
+    });
+
+export function defineConfig<T extends string>(config: AtlasConfig<T>): AtlasConfig<T> {
+  return config;
+}
 
 export interface AtlasRouteEntry {
   routePattern: string;
