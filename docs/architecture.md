@@ -4,6 +4,8 @@ ContextAtlas starts as a TypeScript monorepo with small package boundaries, shar
 
 The implementation strategy is documented in [solution-path.md](./solution-path.md). The coordinate model is documented in [coordinate-algorithm.md](./coordinate-algorithm.md).
 
+Architecturally, ContextAtlas separates the topology engine from the atlas data model and from presentation surfaces. The preferred presentation surface is now the transparent Atlas HUD overlay, while standalone viewers and dashboards remain secondary tools for dense inspection.
+
 ## Monorepo Structure
 
 ```txt
@@ -33,6 +35,62 @@ The root workspace owns shared scripts for typechecking and building all package
 
 `@contextatlas/react` is the future React renderer package. It currently exposes a minimal `AtlasPin` component that can attach a ContextAtlas coordinate, label, route, and layer marker to semantic page UI.
 
+The current `AtlasPin` should be treated as a seed component for the overlay direction, not as the final renderer. Future React components should point toward `CoordinateBadge`, `AtlasBlind`, `AtlasWorkbenchOverlay`, `LayerControl`, `EvidenceStrip`, `CoordinateInspectorPanel`, and `ReviewQueuePanel`.
+
+## Three Architecture Layers
+
+ContextAtlas should be understood as three layers:
+
+1. Discovery and classification engine
+2. Atlas data model
+3. Presentation surfaces
+
+### Discovery And Classification Engine
+
+The engine scans the repo or site, extracts topology signals, builds the graph, assigns stable coordinates, and queues uncertain mappings for review. It should remain repo-native and local-first so teams can run it without a hosted service.
+
+Engine responsibilities:
+
+- discover routes, pages, APIs, components, tests, docs, data files, and integrations
+- extract signals from paths, names, imports, headings, metadata, forms, calls, statuses, and events
+- build and update topology graph nodes and edges
+- classify each node from evidence
+- assign or reuse stable neutral coordinates
+- detect uncertain, stale, split, merge, and needs-review mappings
+
+### Atlas Data Model
+
+The atlas data model stores the durable facts and review state that every surface consumes:
+
+- coordinates
+- aliases
+- labels
+- classifications
+- evidence
+- relationships
+- layer metadata
+- route and URL mappings
+- review status and confidence
+
+### Presentation Surfaces
+
+Presentation surfaces consume the atlas model. They should not become the source of truth.
+
+Primary surfaces:
+
+- transparent Atlas HUD overlay
+- Atlas Pin embedded marker
+- Coordinate Badge
+- Atlas Blinds top and bottom workbench panels
+
+Secondary surfaces:
+
+- standalone review/workbench screens
+- generated Mermaid diagrams
+- CLI output
+- MCP tools
+- Markdown and JSON exports
+
 ## CLI Intent
 
 The CLI will initialize atlas folders, discover topology, classify nodes and edges from evidence, generate layer-specific maps, resolve URLs or files into coordinate candidates, and return focused context for a coordinate. It should remain repo-native and work without needing a hosted service.
@@ -58,12 +116,17 @@ The intended flow is:
 3. Build a topology graph of nodes and edges.
 4. Classify each node by evidence, not by fixed lists.
 5. Assign or reuse stable coordinates.
-6. Generate maps, diagrams, context packs, and shareable layer views.
+6. Generate maps, diagrams, screenshot-ready overlay context, and shareable layer views.
 7. Ask humans or AI agents to review uncertain classifications.
 
 ## React Renderer Intent
 
-The React package should render Atlas Pins, Waypoints, coordinate badges, and eventually layer-aware controls. It should stay framework-light so active apps can adopt it without redesigning their UI.
+The React package should render Atlas Pins, Waypoints, coordinate badges, Atlas Blinds, and eventually layer-aware overlay controls. It should stay framework-light so active apps can adopt it without redesigning their UI.
+
+The renderer should support the overlay/viewer distinction:
+
+- Overlay components sit transparently above a live or local app and avoid blocking the product surface unnecessarily.
+- Viewer components support dense inspection, review queues, coordinate edits, and generated map browsing when the user needs more room.
 
 ## Examples Folder
 

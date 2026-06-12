@@ -106,7 +106,7 @@ v
 Assign or reuse coordinates
 |
 v
-Generate maps, diagrams, context packs, and shareable layer views
+Generate maps, diagrams, overlay-ready context, and shareable layer views
 |
 v
 Ask humans or AI agents to review uncertain classifications

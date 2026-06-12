@@ -40,7 +40,7 @@
       "id": "L5",
       "name": "AI/operations layer",
       "visibility": "internal",
-      "description": "Tests, context packs, prompts, UAT notes, agent instructions, operational runbooks"
+      "description": "Tests, optional context exports, prompts, UAT notes, agent instructions, operational runbooks"
     }
   ]
 }
