@@ -50,29 +50,19 @@ export interface AtlasLayerDefinition {
   description: string;
 }
 
-export type AtlasConfig = {
+export type AtlasConfig<F extends string = "CA:{ORG}:{PROPERTY}:{NODE}" | (string & {})> = {
   name: string;
   version: string;
   defaultPublicLayer: AtlasLayer;
   layers: readonly AtlasLayerDefinition[];
-} & (
-  | {
-      coordinateFormula: "CA:{ORG}:{PROPERTY}:{NODE}";
-      organizationCode: string;
-      propertyCode: string;
-    }
-  | {
-      coordinateFormula?: string;
-      organizationCode?: string;
-      propertyCode?: string;
-    }
-);
+  coordinateFormula?: F;
+} & (F extends "CA:{ORG}:{PROPERTY}:{NODE}"
+  ? { organizationCode: string; propertyCode: string }
+  : { organizationCode?: string; propertyCode?: string });
 
-export function defineConfig<T extends AtlasConfig>(
-  config: T & (T["coordinateFormula"] extends "CA:{ORG}:{PROPERTY}:{NODE}"
-    ? { organizationCode: string; propertyCode: string }
-    : unknown)
-): T {
+export function defineConfig<F extends string = "CA:{ORG}:{PROPERTY}:{NODE}" | (string & {})>(
+  config: AtlasConfig<F>
+): AtlasConfig<F> {
   return config;
 }
 

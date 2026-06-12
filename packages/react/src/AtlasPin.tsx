@@ -20,13 +20,20 @@ export function AtlasPin({
   layer,
   markerLabel = "Atlas Pin",
   headingLevel = "h1",
+  className,
   ...headerProps
 }: AtlasPinProps) {
   const labelId = useId();
   const Heading = headingLevel;
+  const combinedClassName = className ? `context-atlas-pin ${className}` : "context-atlas-pin";
 
   return (
-    <header {...headerProps} aria-labelledby={labelId} data-context-coordinate={coordinate}>
+    <header
+      {...headerProps}
+      className={combinedClassName}
+      aria-labelledby={labelId}
+      data-context-coordinate={coordinate}
+    >
       <p>{markerLabel}</p>
       <Heading id={labelId}>{label}</Heading>
       <dl>
