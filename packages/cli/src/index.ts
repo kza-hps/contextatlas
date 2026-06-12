@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
+import { createRequire } from "node:module";
 import process from "node:process";
 import { runContextCommand } from "./commands/context.js";
 import { runGenerateCommand } from "./commands/generate.js";
 import { runInitCommand } from "./commands/init.js";
 import { runScanCommand } from "./commands/scan.js";
 
-const version = "0.1.0";
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json") as { version: string };
+const version = packageJson.version;
 const [, , command, coordinate] = process.argv;
 
 switch (command) {
