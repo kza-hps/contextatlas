@@ -4,7 +4,7 @@ export function runContextCommand(coordinate?: string): void {
   const trimmed = coordinate?.trim();
 
   if (!trimmed) {
-    console.error("Error: Please provide a coordinate, for example VM.J.CAN.040.");
+    console.error("Error: Please provide a coordinate, for example CA:KZA:VOUCHME:N00042.");
     process.exitCode = 1;
     return;
   }

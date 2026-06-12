@@ -1,94 +1,113 @@
 # Coordinate Algorithm
 
-ContextAtlas needs an elegant coordinate algorithm, not an ever-growing set of special cases.
+ContextAtlas needs a stable coordinate algorithm, not an ever-growing set of special cases.
 
-This document records the current design problem. The final algorithm is not known yet.
+## Coordinate Formula
 
-## Goal
-
-ContextAtlas exists to make software teams faster. It should compress complex product, code, data, test, and AI context into stable coordinates that can expand only when needed.
-
-The coordinate system must be:
-
-- compact enough for humans to copy and recognize
-- precise enough for agents to retrieve safe context
-- role-aware without becoming role-sprawled
-- stable across UI changes
-- deep enough to trace from surface journey to code and lower operational layers
-
-## Working Coordinate Shape
-
-Current examples use:
+Use this neutral formula:
 
 ```txt
-VM.J.CAN.020
+CA:{ORG}:{PROPERTY}:{NODE}
+```
+
+Example:
+
+```txt
+CA:KZA:VOUCHME:N00042
 ```
 
 Meaning:
 
-- `VM`: product or atlas prefix
-- `J`: journey namespace
-- `CAN`: role or actor lens
-- `020`: ordered waypoint
+- `CA`: ContextAtlas coordinate.
+- `ORG`: owning organisation short code.
+- `PROPERTY`: site, app, repo, or property short code.
+- `NODE`: stable neutral node ID.
 
-This is useful, but it is not the full algorithm. It does not yet answer every question about variants, shared workflow events, nested surfaces, generated components, integrations, or lower-level code coordinates.
+The coordinate itself should not describe the actor, journey, page type, status, or workflow. Meaning belongs in metadata.
 
-## Design Principle
+## Metadata Carries Meaning
 
-A coordinate should identify a role-aware user-facing location, not merely a workflow event.
+An atlas node can carry aliases, labels, classifications, evidence, and graph relationships:
 
-Workflow events can affect many actors. For example, "invitation sent" can appear as:
-
-- a candidate tracking that the invitation is pending
-- a referee opening an invitation link
-- an admin debugging delivery
-- an email notification event
-
-Those may share underlying data and statuses, but they should not automatically share one surface coordinate. ContextAtlas should let the algorithm connect them through lower layers instead of conflating them at `L0`.
-
-## Efficiency Tension
-
-Too few coordinates creates ambiguity. One coordinate starts carrying multiple roles, routes, labels, tests, and visibility rules.
-
-Too many coordinates creates noise. The atlas becomes a manual inventory instead of an efficient map.
-
-The algorithm has to find the middle:
-
-```txt
-one coordinate per distinct role-aware surface meaning
-shared lower-layer links for data, status, services, tests, and AI context
+```yaml
+coordinate: CA:KZA:VOUCHME:N00042
+aliases:
+  - VM.J.CAN.040
+  - Candidate completed vouch
+label: Candidate receives completed Vouch ID
+classification:
+  layer: L0
+  actor: candidate
+  surface: page
+  intent: review-share
+  state: completed
+evidence:
+  routes:
+    - /vouches/[id]?view=candidate
+  headings:
+    - Your vouch is complete
+  statuses:
+    - completed
 ```
 
-## Expansion Rule
+Aliases can be human-friendly, customer-specific, or legacy references. They are not the coordinate.
 
-Start compact. Split only when a material axis changes.
+## Classification Axes
 
-Material axes include:
+The stable axes are questions ContextAtlas asks, not fixed lists of possible answers:
 
-- role
-- public meaning
-- route ownership
-- permission or visibility
-- workflow action
-- data access boundary
-- test or compliance responsibility
+- Property
+- Surface
+- Actor
+- Intent
+- State
+- Layer
+- Dependency
+- Edge
 
-If two surfaces differ only by copy, layout, or visual treatment, they may remain one coordinate. If they differ by role, permission, or action intent, they probably need distinct coordinates.
+Classifier outputs should be evidence-backed and confidence-scored where possible. Unknowns should be queued for human or AI review rather than forced into a stale vocabulary.
 
-## Open Questions
+## Coordinate Assignment
 
-- How should ContextAtlas represent shared workflow events that span many coordinates?
-- Should non-user surfaces use a separate namespace from `J`?
-- How should generated code, database functions, policies, prompts, and CI checks be addressed below `L5`?
-- How should coordinates survive route rewrites and component refactors?
-- How should the scanner propose splits without creating noisy coordinate churn?
+Coordinates should be assigned or reused after topology discovery and signal extraction:
 
-## Current Working Rule
+1. Discover addressable and dependent nodes.
+2. Compare evidence against existing coordinates.
+3. Reuse a coordinate when the node is the same stable thing even if route, copy, or implementation details changed.
+4. Assign a new node ID when evidence shows a distinct surface, dependency, workflow, data object, integration, test context, or operations context.
+5. Preserve project aliases when useful, but keep them separate from the coordinate.
 
-Until the algorithm matures, use this rule:
+## Stability Rule
+
+A coordinate should survive copy edits, route rewrites, component refactors, and terminology changes when the underlying node is still the same mapped thing.
+
+Split a coordinate when the topology or evidence shows a materially different node, such as a different actor context, permission boundary, intent, state transition, data boundary, integration, or operational responsibility.
+
+## Discovery Before Vocabulary
+
+ContextAtlas should discover first and name later:
 
 ```txt
-Coordinate = product prefix + journey namespace + actor lens + ordered waypoint
+Repository or site
+|
+v
+Discover routes, pages, APIs, components, tests, docs, data files, integrations
+|
+v
+Extract signals from paths, names, imports, headings, metadata, forms, calls, statuses, events
+|
+v
+Build a topology graph of nodes and edges
+|
+v
+Classify each node by evidence, not by fixed lists
+|
+v
+Assign or reuse coordinates
+|
+v
+Generate maps, diagrams, context packs, and shareable layer views
+|
+v
+Ask humans or AI agents to review uncertain classifications
 ```
-
-Split coordinates when a user-facing surface changes actor lens or permission meaning, even if the underlying workflow event is shared.

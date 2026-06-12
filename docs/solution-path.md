@@ -1,8 +1,8 @@
 # ContextAtlas Solution Path
 
-ContextAtlas should be built as a repo-native, local-first tool before it becomes a standalone app or packaged desktop executable.
+ContextAtlas should be built as a repo-native, local-first engine before it becomes a standalone app or packaged desktop executable.
 
-The product value is not a UI shell. The product value is a durable map that lives with the codebase and can be read by humans, AI coding agents, CI jobs, and future renderers.
+The product value is a durable topology graph that lives with the codebase and can be read by humans, AI coding agents, CI jobs, and future renderers.
 
 ## Recommended Stack Direction
 
@@ -23,38 +23,49 @@ Planned commands:
 
 ```bash
 contextatlas init
-contextatlas scan
+contextatlas discover
+contextatlas classify
 contextatlas generate
-contextatlas context VM.J.CAN.040
+contextatlas resolve <url-or-coordinate>
+contextatlas context <coordinate>
 ```
 
-The CLI should read local files, scan likely implementation surfaces, generate maps, and return focused context for a coordinate.
+Command intent:
 
-## Repo Files as the Source of Truth
+- `discover`: find topology.
+- `classify`: infer meaning from evidence.
+- `generate`: produce maps, diagrams, docs, and context packs.
+- `resolve`: turn a URL, page, file, or coordinate into coordinate candidates.
+- `context`: produce a bounded context pack for a coordinate.
 
-ContextAtlas should store its source of truth in versioned files:
+`scan` can remain as an early placeholder, but scanning is only one operation inside discovery.
 
-- YAML for journey registers and page maps.
+## Repo Files As Source Of Truth
+
+ContextAtlas should store reviewable source and generated artifacts in versioned files:
+
+- YAML for coordinates, discovered nodes, route maps, and review queues.
 - JSON for configuration.
 - Mermaid for layer diagrams.
 - Markdown for generated human and agent context packs.
 
 This keeps the atlas reviewable in pull requests, readable by AI tools, portable across repos, and independent of a hosted service.
 
-## Add a Core Package Next
+## Add A Core Package Next
 
 Before building a UI, add a shared `@contextatlas/core` package.
 
 The core package should own:
 
 - loading atlas config
-- parsing journey registers
-- indexing coordinates
-- resolving routes and page maps
-- building layer graphs
-- generating coordinate context
-
-The CLI, MCP server, and viewer should call this shared core instead of each implementation re-reading atlas files in its own way.
+- discovering topology from repo or site inputs
+- extracting signals
+- building and updating topology graphs
+- classifying nodes and edges
+- indexing coordinates and aliases
+- resolving routes, URLs, files, and coordinates
+- generating layer views and coordinate context
+- creating review queues for uncertain mappings
 
 Recommended future structure:
 
@@ -68,23 +79,23 @@ packages/
   viewer
 ```
 
-## MCP as the Agent Layer
+## MCP As The Agent Layer
 
 A local MCP server is the best next agent-facing surface after the CLI and core engine exist.
 
 Potential MCP tools:
 
 - `get_coordinate_context`
-- `list_journey_steps`
-- `find_routes_for_coordinate`
+- `resolve_atlas_reference`
+- `list_layer_views`
+- `list_uncertain_mappings`
 - `generate_agent_prompt`
-- `list_layer_diagrams`
 
 This lets Codex, Claude, and other agent tools ask ContextAtlas for scoped repo context instead of searching the whole codebase from scratch.
 
 ## Viewer Later
 
-A small local web viewer can come after the core workflow is proven. It should render diagrams, registers, coordinates, and layer visibility controls.
+A small local web viewer can come after the core workflow is proven. It should render diagrams, coordinate records, route maps, review queues, and layer visibility controls.
 
 The viewer should consume generated atlas output and shared core APIs. It should not become the source of truth.
 
@@ -96,6 +107,6 @@ Packaging too early would add complexity around installers, updates, permissions
 
 ## Product Principle
 
-Build the map engine first. Expose it through the CLI. Make it agent-readable through MCP. Add UI once the underlying coordinate system is useful.
+Build the discovery and classification engine first. Expose it through the CLI. Make it agent-readable through MCP. Add UI once the underlying coordinate system is useful.
 
-The coordinate system itself needs a compact algorithm that can scale without hand-authored sprawl. See [coordinate-algorithm.md](./coordinate-algorithm.md) for the current working rule and open design questions.
+Documentation should stay alive and symbiotic with the repo: it should describe the current architecture, schema, package roles, and intended build path instead of preserving stale decisions.

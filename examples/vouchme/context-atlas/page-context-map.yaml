@@ -1,8 +1,8 @@
-# Initial example page context map only. Placeholder values are not verified production truth.
-pages:
+# Example route map only. Placeholder values are not verified production truth.
+routes:
   - routePattern: /candidate/vouches/new
     coordinates:
-      - VM.J.CAN.010
+      - CA:KZA:VOUCHME:N00010
     likelyComponents:
       - CandidateVouchRequestForm
       - RefereeInviteFields
@@ -12,7 +12,7 @@ pages:
       - L2
   - routePattern: /candidate/vouches/:id
     coordinates:
-      - VM.J.CAN.020
+      - CA:KZA:VOUCHME:N00020
     likelyComponents:
       - CandidateVouchStatus
       - PendingRefereeInviteCard
@@ -22,7 +22,7 @@ pages:
       - L2
   - routePattern: /invite/:token
     coordinates:
-      - VM.J.REF.025
+      - CA:KZA:VOUCHME:N00025
     likelyComponents:
       - RefereeInvitationLanding
       - InvitationTokenGate
@@ -32,8 +32,8 @@ pages:
       - L2
   - routePattern: /respond/:token
     coordinates:
-      - VM.J.REF.030
-      - VM.J.REF.040
+      - CA:KZA:VOUCHME:N00030
+      - CA:KZA:VOUCHME:N00040
     likelyComponents:
       - RefereeQuestionnaire
       - VouchCompletionHeader
@@ -44,7 +44,7 @@ pages:
       - L3
   - routePattern: /candidate/vouch-id
     coordinates:
-      - VM.J.CAN.050
+      - CA:KZA:VOUCHME:N00050
     likelyComponents:
       - VouchIdCard
       - SharingControls
@@ -54,7 +54,7 @@ pages:
       - L3
   - routePattern: /recruiter/request-access
     coordinates:
-      - VM.J.REC.060
+      - CA:KZA:VOUCHME:N00060
     likelyComponents:
       - RecruiterAccessRequestForm
     layers:
@@ -63,7 +63,7 @@ pages:
       - L2
   - routePattern: /access-review/:token
     coordinates:
-      - VM.J.REF.070
+      - CA:KZA:VOUCHME:N00070
     likelyComponents:
       - RefereeAccessDecision
     layers:
@@ -72,7 +72,7 @@ pages:
       - L2
   - routePattern: /trusted-signal/:accessId
     coordinates:
-      - VM.J.REC.080
+      - CA:KZA:VOUCHME:N00080
     likelyComponents:
       - TrustedSignalView
     layers:

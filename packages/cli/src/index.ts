@@ -24,7 +24,14 @@ switch (command) {
     runInitCommand();
     break;
   case "scan":
+  case "discover":
     runScanCommand();
+    break;
+  case "classify":
+    console.log("ContextAtlas classify: evidence-based classifier not implemented yet.");
+    break;
+  case "resolve":
+    console.log("ContextAtlas resolve: URL, page, or file resolver not implemented yet.");
     break;
   case "generate":
     runGenerateCommand();
@@ -53,8 +60,13 @@ function printHelp(): void {
 
 Usage:
   contextatlas init
-  contextatlas scan
+  contextatlas discover
+  contextatlas classify
   contextatlas generate
+  contextatlas resolve <url-or-coordinate>
   contextatlas context <coordinate>
+
+Aliases:
+  contextatlas scan
 `);
 }
