@@ -40,6 +40,10 @@ nodes:
         target: CA:KZA:VOUCHME:N00020
         label: Invitation status becomes visible
         confidence: 0.55
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00025
+        label: Referee receives invitation
+        confidence: 0.55
 
   - coordinate: CA:KZA:VOUCHME:N00020
     aliases:
@@ -73,11 +77,6 @@ nodes:
         - candidate-invitation-status.spec.ts
       notes:
         - Candidate wording is project evidence, not global vocabulary.
-    relationships:
-      - type: depends-on
-        target: CA:KZA:VOUCHME:N00025
-        label: Referee receives invitation
-        confidence: 0.5
 
   - coordinate: CA:KZA:VOUCHME:N00025
     aliases:
@@ -170,6 +169,7 @@ nodes:
       routes:
         - /referee/vouches/:id/complete
         - /vouch/:id/complete
+        - /respond/:token
       headings:
         - Your vouch is complete
       statuses:
@@ -225,6 +225,11 @@ nodes:
         - resend-email
       tests:
         - candidate-vouch-id.spec.ts
+    relationships:
+      - type: leads-to
+        target: CA:KZA:VOUCHME:N00060
+        label: Recruiter requests access
+        confidence: 0.55
 
   - coordinate: CA:KZA:VOUCHME:N00060
     aliases:

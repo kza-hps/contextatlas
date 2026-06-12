@@ -64,7 +64,7 @@ export type AtlasConfig<T extends string = string> = {
       propertyCode?: string;
     });
 
-export function defineConfig<T extends string>(config: AtlasConfig<T>): AtlasConfig<T> {
+export function defineConfig<const T extends string>(config: AtlasConfig<T>): AtlasConfig<T> {
   return config;
 }
 

@@ -1,3 +1,3 @@
-export function runScanCommand(): void {
-  console.log("ContextAtlas scan: discovery scanner placeholder. Use discover/classify wording for the future pipeline.");
+export function runScanCommand(command: string = "discover"): void {
+  console.log(`ContextAtlas ${command}: discovery scanner placeholder.`);
 }

@@ -42,6 +42,24 @@ routes:
       - L1
       - L2
       - L3
+  - routePattern: /referee/vouches/:id/complete
+    coordinates:
+      - CA:KZA:VOUCHME:N00040
+    likelyComponents:
+      - VouchCompletionHeader
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /vouch/:id/complete
+    coordinates:
+      - CA:KZA:VOUCHME:N00040
+    likelyComponents:
+      - VouchCompletionHeader
+    layers:
+      - L0
+      - L1
+      - L2
   - routePattern: /candidate/vouch-id
     coordinates:
       - CA:KZA:VOUCHME:N00050
@@ -52,7 +70,25 @@ routes:
       - L0
       - L1
       - L3
+  - routePattern: /candidate/profile
+    coordinates:
+      - CA:KZA:VOUCHME:N00050
+    likelyComponents:
+      - VouchIdCard
+    layers:
+      - L0
+      - L1
+      - L3
   - routePattern: /recruiter/request-access
+    coordinates:
+      - CA:KZA:VOUCHME:N00060
+    likelyComponents:
+      - RecruiterAccessRequestForm
+    layers:
+      - L0
+      - L1
+      - L2
+  - routePattern: /vouch/:vouchId/access
     coordinates:
       - CA:KZA:VOUCHME:N00060
     likelyComponents:
@@ -70,7 +106,25 @@ routes:
       - L0
       - L1
       - L2
+  - routePattern: /referee/access-requests/:id
+    coordinates:
+      - CA:KZA:VOUCHME:N00070
+    likelyComponents:
+      - RefereeAccessDecision
+    layers:
+      - L0
+      - L1
+      - L2
   - routePattern: /trusted-signal/:accessId
+    coordinates:
+      - CA:KZA:VOUCHME:N00080
+    likelyComponents:
+      - TrustedSignalView
+    layers:
+      - L0
+      - L1
+      - L3
+  - routePattern: /recruiter/vouches/:id
     coordinates:
       - CA:KZA:VOUCHME:N00080
     likelyComponents:

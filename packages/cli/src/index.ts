@@ -25,7 +25,7 @@ switch (command) {
     break;
   case "scan":
   case "discover":
-    runScanCommand();
+    runScanCommand(command);
     break;
   case "classify":
     console.log("ContextAtlas classify: evidence-based classifier not implemented yet.");
