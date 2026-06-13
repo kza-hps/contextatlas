@@ -1,6 +1,9 @@
 import { alias, coordinate, journey, pin, reference, workbenchLayers } from "./data.js";
 
 const root = document.getElementById("root");
+const logoSrc =
+  "../../../design-references/ChatGPT%20Image%20Jun%2013,%202026,%2010_03_39%20AM%20(1).png";
+let currentOpacity = 0.9;
 
 function buildAtlasPin(data) {
   const lines = ["ContextAtlas Pin", `Coordinate: ${data.coordinate}`];
@@ -27,7 +30,7 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function renderJourneyHeader() {
+function renderJourneyHeader(opacity) {
   const activeIndex = journey.steps.findIndex((step) => step.id === journey.currentStepId);
   const steps = journey.steps
     .map((step, index) => {
@@ -47,35 +50,26 @@ function renderJourneyHeader() {
     .join("");
 
   return `
-    <header class="ca-journey" data-context-coordinate="${escapeHtml(journey.coordinate)}" aria-label="Journey position for ${escapeHtml(journey.alias)}">
+    <header class="ca-journey" style="--atlas-opacity: ${opacity}" data-context-coordinate="${escapeHtml(journey.coordinate)}" aria-label="Journey position for ${escapeHtml(journey.alias)}">
       <div class="ca-journey__identity">
-        <span class="ca-journey__role">
-          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6" />
-            <path d="M5 19.5a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-          </svg>
-          ${escapeHtml(journey.role)}
+        <span class="ca-journey__logo" aria-hidden="true">
+          <img src="${logoSrc}" alt="" />
         </span>
         <span class="ca-journey__coords">
-          <span class="ca-journey__alias">${escapeHtml(journey.alias)}</span>
           <span class="ca-journey__coordinate">${escapeHtml(journey.coordinate)}</span>
+          <span class="ca-journey__alias">${escapeHtml(journey.alias)}</span>
         </span>
       </div>
 
       <div class="ca-journey__center">
         <ol class="ca-journey__steps" aria-label="Journey path">${steps}</ol>
-        <p class="ca-journey__statusline">
-          <span class="ca-journey__status">
-            <span class="ca-journey__status-dot" aria-hidden="true"></span>
-            ${escapeHtml(journey.status)}
-          </span>
-          <span class="ca-journey__next">
-            <span class="ca-journey__next-label">Next:</span> ${escapeHtml(journey.nextAction)}
-          </span>
-        </p>
       </div>
 
       <div class="ca-journey__actions">
+        <label class="ca-opacity" for="atlas-opacity">
+          <span class="ca-opacity__label">Opacity</span>
+          <input id="atlas-opacity" type="range" min="0.45" max="1" step="0.05" value="${opacity}" aria-label="Atlas overlay opacity" />
+        </label>
         <button type="button" class="ca-pin-button" id="copy-atlas-pin" aria-live="polite">
           <span class="ca-pin-button__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="16" height="16" focusable="false">
@@ -223,14 +217,16 @@ function renderWorkbench(open) {
   `;
 }
 
-function render({ copiedText = "", workbenchOpen = false } = {}) {
+function render({ copiedText = "", workbenchOpen = false, opacity = currentOpacity } = {}) {
+  currentOpacity = Number(opacity);
+
   root.innerHTML = `
     <div class="ca-app">
       <div class="ca-brandline">
         <span><strong>ContextAtlas</strong> - L0 Journey Header over a live VouchMe page</span>
         <span class="ca-brandline__hint">Map the context before the model guesses</span>
       </div>
-      ${renderJourneyHeader()}
+      ${renderJourneyHeader(currentOpacity)}
       ${renderCopiedPanel(copiedText)}
       ${renderVouchBody()}
       ${renderWorkbench(workbenchOpen)}
@@ -246,13 +242,19 @@ function render({ copiedText = "", workbenchOpen = false } = {}) {
       // visible packet below remains selectable either way.
     }
 
-    render({ copiedText: text, workbenchOpen });
+    render({ copiedText: text, workbenchOpen, opacity: currentOpacity });
     document.getElementById("copy-atlas-pin")?.classList.add("is-copied");
     document.querySelector(".ca-pin-button__label").textContent = "Copied";
   });
 
   document.getElementById("workbench-toggle")?.addEventListener("click", () => {
-    render({ copiedText, workbenchOpen: !workbenchOpen });
+    render({ copiedText, workbenchOpen: !workbenchOpen, opacity: currentOpacity });
+  });
+
+  document.getElementById("atlas-opacity")?.addEventListener("input", (event) => {
+    const nextOpacity = event.target.value;
+    currentOpacity = Number(nextOpacity);
+    document.querySelector(".ca-journey")?.style.setProperty("--atlas-opacity", nextOpacity);
   });
 }
 
