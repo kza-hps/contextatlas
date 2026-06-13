@@ -29,11 +29,14 @@ Design decisions should follow this order:
 9. `docs/center-of-gravity.md`
 10. `docs/product-vision.md`
 11. `docs/ux-atlas-blinds.md`
-12. `design-references/stitch_contextatlas_design_system.zip`
-13. `design-references/aicovenants-blinds-reference.md`
-14. `design-references/*.png`
+12. `design-references/stitch-second-attempt-l0-header.png`
+13. `design-references/stitch-second-attempt-l0-page.png`
+14. `design-references/stitch_contextatlas_design_system_second_attempt.zip`
+15. `design-references/stitch_contextatlas_design_system.zip`
+16. `design-references/aicovenants-blinds-reference.md`
+17. `design-references/*.png`
 
-The Stitch design system is a secondary reference. It should govern what to avoid as much as what to keep.
+The second Stitch attempt is a useful reference for the `L0` Journey Header only. The first Stitch design system is mostly a reference for what to avoid.
 
 ## Center Of Gravity
 
@@ -84,6 +87,18 @@ Alias: VM.J.CAN.050
 ```
 
 The header must be beautiful, calm, legible, and useful to a non-technical user.
+
+Use `design-references/stitch-second-attempt-l0-header.png` as the preferred shape for this component. It is close to the intended replacement for the current top header pattern:
+
+- dark rounded horizontal strip
+- role badge on the left
+- project alias and neutral coordinate beside it
+- centered 4-6 step journey path
+- active step highlighted as a status chip
+- status and next action below the path
+- copy Atlas Pin button on the right
+
+Do not keep unrelated top navigation such as `L0 Map`, `Workbench`, `Records`, or `Network` as the primary header. The product page header should orient the current journey moment first.
 
 ### Surface 2: L0 Expanded Journey Map
 
@@ -347,8 +362,9 @@ Optional cartographic/editorial accent fonts may appear only in brand or ceremon
 
 ## What To Cherry Pick From Stitch
 
-Keep these elements from the Stitch attempt:
+Keep these elements from the Stitch attempts:
 
+- the second-attempt `L0` Journey Header pattern
 - dark glass/frosted overlay feel
 - opacity control idea
 - top and bottom pull handles
@@ -362,6 +378,7 @@ Keep these elements from the Stitch attempt:
 
 Improve these elements:
 
+- replace any generic app/navigation header with the `L0` Journey Header
 - make `L0` a real journey header, not an empty atmospheric map
 - use actual journey/status/route/evidence content from examples
 - make every layer label match the actual layer model
@@ -373,6 +390,7 @@ Improve these elements:
 Do not repeat these first-attempt mistakes:
 
 - do not call the product a telemetry suite
+- do not use the top site navigation from the second attempt as the final header pattern
 - do not use fake deploy/network/infrastructure nouns as main content
 - do not use labels like `L3 Neural`, `L4 Temporal`, or `L5 Quantum`
 - do not make `L0` a mostly empty world map or glowing reticle
@@ -418,6 +436,8 @@ Prioritize these in order.
 
 Show the header at the top of an active product page.
 
+The preferred reference is `design-references/stitch-second-attempt-l0-header.png`. Use that strip as the starting point and refine it rather than inventing a new header.
+
 Use VouchMe-like sample content:
 
 ```txt
@@ -430,6 +450,8 @@ Coordinate: CA:KZA:VOUCHME:N00050
 ```
 
 This is the most important screen.
+
+This header should replace generic product navigation in the first viewport. If additional navigation is needed, it should be secondary to the journey header.
 
 ### 2. Dashboard Cards With Record-Aware Context
 
@@ -664,4 +686,3 @@ Engineer/AI agent:
 ```txt
 Start with this coordinate. Load these routes, components, statuses, tables, services, and tests. Widen only if needed.
 ```
-
