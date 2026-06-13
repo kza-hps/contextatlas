@@ -4,7 +4,7 @@ A working, local, inspectable prototype of the ContextAtlas product wedge:
 
 - the record-aware **L0 Journey Header** at the top of a live VouchMe page,
 - a copyable **Atlas Pin / Waypoint**,
-- and an expandable **L1-L5 Workbench** as a bottom blind.
+- and a progressive **L1-L5 Workbench** as a bottom blind with layered swimlanes.
 
 It is built around one sample coordinate:
 
@@ -68,6 +68,7 @@ http://localhost:8000/examples/vouchme/prototype/      (python http.server)
 - **Coordinate reveal** - hover the cA logo; the coordinate slides out with a copy affordance.
 - **Atlas Pin** - hover the red locator in the active pill; the pin packet drops beneath it.
 - **Opacity** - adjust the vertical control at the far right of the header.
-- **Hover / focus** - the pin button, share button, and workbench handle all respond.
-- **Expanded / collapsed** - click the *L1-L5 Workbench* handle to pull the blind up.
+- **Hover / focus** - the locator, share button, and workbench handle all respond.
+- **Layer reveal** - click the *L1-L5 Workbench* handle repeatedly to pull up L1 through L5.
+- **Swimlanes** - each revealed layer shows mapped evidence as diagram nodes.
 - **Responsive** - narrow the window; the header stacks and the workbench reflows.

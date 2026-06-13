@@ -80,7 +80,7 @@ export const workbenchLayers = [
   },
   {
     id: "L5",
-    name: "AI / Delivery / Ops",
+    name: "AI / Delivery / DevOps",
     audience: "AI agents, QA, delivery",
     groups: [
       { label: "Tests", values: ["candidate-vouch-id.spec.ts"] },

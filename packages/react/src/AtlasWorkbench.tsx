@@ -1,5 +1,4 @@
-import type { ComponentPropsWithoutRef } from "react";
-import { useId, useState } from "react";
+import { useId, useState, type ComponentPropsWithoutRef, type CSSProperties } from "react";
 import type { AtlasLayer } from "@contextatlas/schema";
 
 export interface WorkbenchGroup {
@@ -24,10 +23,12 @@ export interface AtlasWorkbenchProps
   coordinate: string;
   /** Optional alias shown in the handle summary. */
   alias?: string;
-  /** L1–L5 evidence, in order. */
+  /** L1-L5 evidence, in order. */
   layers: readonly WorkbenchLayer[];
-  /** Whether the workbench starts expanded. Defaults to false (collapsed peek). */
+  /** Whether the workbench starts fully expanded. Defaults to false. */
   defaultOpen?: boolean;
+  /** Initial number of visible layers. Overrides defaultOpen when provided. */
+  defaultDepth?: number;
 }
 
 function LayersGlyph() {
@@ -56,23 +57,29 @@ function ChevronGlyph({ open }: { open: boolean }) {
 }
 
 /**
- * `L1`–`L5` Atlas Workbench — the deeper context behind the same coordinate.
+ * L1-L5 Atlas Workbench, the deeper context behind the same coordinate.
  *
- * Presented as a bottom blind that the user pulls up. Collapsed it shows a calm
- * peek summary; expanded it reveals the page, workflow, data, platform, and
- * AI/ops evidence that supports the classification. This is the context
- * inversion payload: start narrow from the coordinate, widen only if needed.
+ * Presented as a bottom blind that reveals one swimlane at a time. The user can
+ * stop at L1, pull deeper through L5, or collapse back to the compact handle.
  */
 export function AtlasWorkbench({
   coordinate,
   alias,
   layers,
   defaultOpen = false,
+  defaultDepth,
   className,
   ...sectionProps
 }: AtlasWorkbenchProps) {
-  const [open, setOpen] = useState(defaultOpen);
+  const initialDepth = defaultDepth ?? (defaultOpen ? layers.length : 0);
+  const [revealedDepth, setRevealedDepth] = useState(() =>
+    Math.max(0, Math.min(initialDepth, layers.length)),
+  );
   const panelId = useId();
+  const open = revealedDepth > 0;
+  const nextDepth = revealedDepth >= layers.length ? 0 : revealedDepth + 1;
+  const nextLayer = layers[revealedDepth];
+  const cta = !open ? "Pull L1" : revealedDepth >= layers.length ? "Collapse" : `Pull ${nextLayer?.id ?? ""}`;
   const combinedClassName = ["ca-workbench", open ? "is-open" : "is-collapsed", className]
     .filter(Boolean)
     .join(" ");
@@ -82,60 +89,78 @@ export function AtlasWorkbench({
       {...sectionProps}
       className={combinedClassName}
       data-context-coordinate={coordinate}
-      aria-label="L1–L5 Atlas Workbench"
+      data-depth={revealedDepth}
+      aria-label="L1-L5 Atlas Workbench"
     >
       <button
         type="button"
         className="ca-workbench__handle"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setRevealedDepth(nextDepth)}
       >
         <span className="ca-workbench__handle-grip" aria-hidden="true" />
         <span className="ca-workbench__handle-main">
           <LayersGlyph />
-          <span className="ca-workbench__handle-title">L1–L5 Workbench</span>
+          <span className="ca-workbench__handle-title">L1-L5 Workbench</span>
           <span className="ca-workbench__handle-sub">
             Deeper context for <code>{alias ?? coordinate}</code>
           </span>
         </span>
         <span className="ca-workbench__handle-cta">
-          {open ? "Collapse" : "Open evidence"}
+          {cta}
           <ChevronGlyph open={open} />
         </span>
       </button>
 
       <div id={panelId} className="ca-workbench__panel" hidden={!open}>
         <p className="ca-workbench__inversion">
-          Context inversion — start from this coordinate, load only the mapped evidence below,
-          and widen the search only if it is not enough.
+          Context inversion - pull one layer at a time, inspect only the evidence needed,
+          and widen the map only when the visible lane is not enough.
         </p>
-        <div className="ca-workbench__grid">
-          {layers.map((layer) => (
-            <article key={String(layer.id)} className="ca-workbench__layer" data-layer={String(layer.id)}>
-              <header className="ca-workbench__layer-head">
-                <span className="ca-workbench__layer-id">{layer.id}</span>
-                <span className="ca-workbench__layer-name">{layer.name}</span>
-                {layer.audience ? (
-                  <span className="ca-workbench__layer-audience">{layer.audience}</span>
-                ) : null}
-              </header>
-              <dl className="ca-workbench__groups">
-                {layer.groups.map((group) => (
-                  <div key={group.label} className="ca-workbench__group">
-                    <dt className="ca-workbench__group-label">{group.label}</dt>
-                    <dd className="ca-workbench__group-values">
-                      {group.values.map((value) => (
-                        <code key={value} className="ca-workbench__chip">
-                          {value}
-                        </code>
-                      ))}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </article>
-          ))}
+        <div className="ca-workbench__diagram" aria-label="Layered context swimlane diagram">
+          {layers.map((layer, index) => {
+            const layerDepth = index + 1;
+            const revealed = layerDepth <= revealedDepth;
+
+            return (
+              <section
+                key={String(layer.id)}
+                className={`ca-workbench__swimlane ${revealed ? "is-revealed" : "is-compressed"}`}
+                data-layer={String(layer.id)}
+                style={{ "--layer-index": index } as CSSProperties}
+              >
+                <button
+                  type="button"
+                  className="ca-workbench__lane-label"
+                  aria-expanded={revealed}
+                  onClick={() => setRevealedDepth(layerDepth)}
+                >
+                  <span className="ca-workbench__layer-id">{layer.id}</span>
+                  <span className="ca-workbench__layer-name">{layer.name}</span>
+                  {layer.audience ? (
+                    <span className="ca-workbench__layer-audience">{layer.audience}</span>
+                  ) : null}
+                </button>
+                <div className="ca-workbench__lane-canvas" aria-hidden={!revealed}>
+                  {revealed
+                    ? layer.groups.map((group) => (
+                        <div key={group.label} className="ca-workbench__node-group">
+                          <span className="ca-workbench__group-label">{group.label}</span>
+                          <span className="ca-workbench__nodes">
+                            {group.values.map((value) => (
+                              <span key={value} className="ca-workbench__node">
+                                {value}
+                              </span>
+                            ))}
+                          </span>
+                        </div>
+                      ))
+                    : null}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -192,38 +192,53 @@ function renderVouchBody() {
   `;
 }
 
-function renderWorkbench(open) {
-  const layers = workbenchLayers
-    .map((layer) => {
-      const groups = layer.groups
-        .map(
-          (group) => `
-            <div class="ca-workbench__group">
-              <dt class="ca-workbench__group-label">${escapeHtml(group.label)}</dt>
-              <dd class="ca-workbench__group-values">
-                ${group.values.map((value) => `<code class="ca-workbench__chip">${escapeHtml(value)}</code>`).join("")}
-              </dd>
-            </div>
-          `,
-        )
+function renderDiagramNodes(layer, revealed) {
+  const groups = layer.groups
+    .map((group) => {
+      const values = group.values
+        .map((value) => `<span class="ca-workbench__node">${escapeHtml(value)}</span>`)
         .join("");
 
       return `
-        <article class="ca-workbench__layer" data-layer="${escapeHtml(layer.id)}">
-          <header class="ca-workbench__layer-head">
+        <div class="ca-workbench__node-group">
+          <span class="ca-workbench__group-label">${escapeHtml(group.label)}</span>
+          <span class="ca-workbench__nodes">${values}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  return revealed ? groups : "";
+}
+
+function renderWorkbench(revealedDepth) {
+  const depth = Math.max(0, Math.min(revealedDepth, workbenchLayers.length));
+  const nextDepth = depth >= workbenchLayers.length ? 0 : depth + 1;
+  const cta = depth === 0 ? "Pull L1" : depth >= workbenchLayers.length ? "Collapse" : `Pull ${workbenchLayers[depth].id}`;
+  const layers = workbenchLayers
+    .map((layer, index) => {
+      const layerDepth = index + 1;
+      const revealed = layerDepth <= depth;
+      const state = revealed ? "is-revealed" : "is-compressed";
+
+      return `
+        <section class="ca-workbench__swimlane ${state}" data-layer="${escapeHtml(layer.id)}" style="--layer-index: ${index}">
+          <button type="button" class="ca-workbench__lane-label" data-workbench-depth="${layerDepth}" aria-expanded="${revealed ? "true" : "false"}">
             <span class="ca-workbench__layer-id">${escapeHtml(layer.id)}</span>
             <span class="ca-workbench__layer-name">${escapeHtml(layer.name)}</span>
             <span class="ca-workbench__layer-audience">${escapeHtml(layer.audience)}</span>
-          </header>
-          <dl class="ca-workbench__groups">${groups}</dl>
-        </article>
+          </button>
+          <div class="ca-workbench__lane-canvas" aria-hidden="${revealed ? "false" : "true"}">
+            ${renderDiagramNodes(layer, revealed)}
+          </div>
+        </section>
       `;
     })
     .join("");
 
   return `
-    <section class="ca-workbench ${open ? "is-open" : "is-collapsed"}" data-context-coordinate="${escapeHtml(coordinate)}" aria-label="L1-L5 Atlas Workbench">
-      <button type="button" class="ca-workbench__handle" id="workbench-toggle" aria-expanded="${open ? "true" : "false"}" aria-controls="workbench-panel">
+    <section class="ca-workbench ${depth > 0 ? "is-open" : "is-collapsed"}" data-context-coordinate="${escapeHtml(coordinate)}" data-depth="${depth}" aria-label="L1-L5 Atlas Workbench">
+      <button type="button" class="ca-workbench__handle" id="workbench-toggle" data-next-depth="${nextDepth}" aria-expanded="${depth > 0 ? "true" : "false"}" aria-controls="workbench-panel">
         <span class="ca-workbench__handle-grip" aria-hidden="true"></span>
         <span class="ca-workbench__handle-main">
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
@@ -234,25 +249,25 @@ function renderWorkbench(open) {
           <span class="ca-workbench__handle-sub">Deeper context for <code>${escapeHtml(alias)}</code></span>
         </span>
         <span class="ca-workbench__handle-cta">
-          ${open ? "Collapse" : "Open evidence"}
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" class="ca-workbench__chevron" data-open="${open ? "true" : "false"}">
+          ${escapeHtml(cta)}
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" class="ca-workbench__chevron" data-open="${depth > 0 ? "true" : "false"}">
             <path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </span>
       </button>
 
-      <div id="workbench-panel" class="ca-workbench__panel" ${open ? "" : "hidden"}>
+      <div id="workbench-panel" class="ca-workbench__panel" ${depth > 0 ? "" : "hidden"}>
         <p class="ca-workbench__inversion">
-          Context inversion - start from this coordinate, load only the mapped evidence below,
-          and widen the search only if it is not enough.
+          Context inversion - pull one layer at a time, inspect only the evidence needed,
+          and widen the map only when the visible lane is not enough.
         </p>
-        <div class="ca-workbench__grid">${layers}</div>
+        <div class="ca-workbench__diagram" aria-label="Layered context swimlane diagram">${layers}</div>
       </div>
     </section>
   `;
 }
 
-function render({ workbenchOpen = false, opacity = currentOpacity } = {}) {
+function render({ workbenchDepth = 0, opacity = currentOpacity } = {}) {
   currentOpacity = Number(opacity);
 
   root.innerHTML = `
@@ -263,7 +278,7 @@ function render({ workbenchOpen = false, opacity = currentOpacity } = {}) {
       </div>
       ${renderJourneyHeader(currentOpacity)}
       ${renderVouchBody()}
-      ${renderWorkbench(workbenchOpen)}
+      ${renderWorkbench(workbenchDepth)}
     </div>
   `;
 
@@ -288,7 +303,14 @@ function render({ workbenchOpen = false, opacity = currentOpacity } = {}) {
   }));
 
   document.getElementById("workbench-toggle")?.addEventListener("click", () => {
-    render({ workbenchOpen: !workbenchOpen, opacity: currentOpacity });
+    const nextDepth = Number(document.getElementById("workbench-toggle")?.dataset.nextDepth ?? 1);
+    render({ workbenchDepth: nextDepth, opacity: currentOpacity });
+  });
+
+  document.querySelectorAll("[data-workbench-depth]").forEach((target) => {
+    target.addEventListener("click", () => {
+      render({ workbenchDepth: Number(target.dataset.workbenchDepth), opacity: currentOpacity });
+    });
   });
 
   document.getElementById("atlas-opacity")?.addEventListener("input", (event) => {
