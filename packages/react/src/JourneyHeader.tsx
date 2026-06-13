@@ -1,6 +1,5 @@
-import { useId, useState, type ComponentPropsWithoutRef, type CSSProperties } from "react";
-import { CopyAtlasPinButton } from "./CopyAtlasPinButton.js";
-import type { AtlasPinData } from "./pinPacket.js";
+import { useId, useState, type ComponentPropsWithoutRef, type CSSProperties, type MouseEvent } from "react";
+import { buildAtlasPin, type AtlasPinData } from "./pinPacket.js";
 
 export interface JourneyStep {
   id: string;
@@ -41,6 +40,34 @@ function StepCheckGlyph() {
   );
 }
 
+function RoleGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" className="ca-journey__role-icon">
+      <circle cx="12" cy="8" r="3.4" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 19.5a7 7 0 0 1 14 0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CopyGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" className={className}>
+      <rect x="8" y="8" width="10" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function LocationGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false" className={className}>
+      <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+      <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /**
  * Record-aware `L0` Journey Header, the first ContextAtlas product surface.
  *
@@ -50,7 +77,7 @@ function StepCheckGlyph() {
  * Atlas Pin action.
  */
 export function JourneyHeader({
-  role: _role,
+  role,
   coordinate,
   alias,
   logoSrc,
@@ -66,16 +93,38 @@ export function JourneyHeader({
   ...headerProps
 }: JourneyHeaderProps) {
   const [opacity, setOpacity] = useState(defaultOpacity);
+  const [copiedCoordinate, setCopiedCoordinate] = useState(false);
   const opacityId = useId();
+  const pinPanelId = useId();
   const activeIndex = steps.findIndex((step) => step.id === currentStepId);
   const combinedClassName = ["ca-journey", className].filter(Boolean).join(" ");
+  const pinPacket = buildAtlasPin(pin);
+  const pinLines = pinPacket.split("\n");
   const headerStyle = {
     "--atlas-opacity": opacity,
     ...style,
   } as CSSProperties;
-  void _role;
   void _status;
   void _nextAction;
+
+  async function copyCoordinate() {
+    try {
+      await navigator.clipboard?.writeText(String(coordinate));
+    } catch {
+      // The coordinate is revealed on hover/focus even if clipboard access fails.
+    }
+    setCopiedCoordinate(true);
+  }
+
+  async function copyPin(event: MouseEvent<HTMLButtonElement>) {
+    try {
+      await navigator.clipboard?.writeText(pinPacket);
+    } catch {
+      // The visible packet remains available if clipboard access is denied.
+    }
+    onCopyPin?.(pinPacket);
+    event.currentTarget.blur();
+  }
 
   return (
     <header
@@ -85,16 +134,18 @@ export function JourneyHeader({
       data-context-coordinate={coordinate}
       aria-label={`Journey position for ${alias ?? coordinate}`}
     >
-      <div className="ca-journey__identity">
+      <div className={`ca-journey__identity ${copiedCoordinate ? "is-coordinate-copied" : ""}`}>
         {logoSrc ? (
-          <span className="ca-journey__logo" aria-hidden="true">
+          <button type="button" className="ca-journey__logo" aria-label="Reveal and copy coordinate" onClick={copyCoordinate}>
             <img src={logoSrc} alt="" />
-          </span>
+          </button>
         ) : null}
-        <span className="ca-journey__coords">
+        <button type="button" className="ca-journey__coords" aria-label="Copy coordinate" onClick={copyCoordinate}>
           <span className="ca-journey__coordinate">{coordinate}</span>
-          {alias ? <span className="ca-journey__alias">{alias}</span> : null}
-        </span>
+          <span className="ca-journey__copy-coordinate">
+            <CopyGlyph />
+          </span>
+        </button>
       </div>
 
       <div className="ca-journey__center">
@@ -109,7 +160,32 @@ export function JourneyHeader({
                 aria-current={state === "active" ? "step" : undefined}
               >
                 {state === "active" ? <StepCheckGlyph /> : null}
+                {step.label.toLowerCase() === role.toLowerCase() ? <RoleGlyph /> : null}
                 <span className="ca-journey__step-label">{step.label}</span>
+                {state === "active" ? (
+                  <>
+                    <button
+                      type="button"
+                      className="ca-locator"
+                      aria-label="Copy Atlas Pin"
+                      aria-describedby={pinPanelId}
+                      onClick={copyPin}
+                    >
+                      <LocationGlyph className="ca-locator__pin" />
+                      <CopyGlyph className="ca-locator__copy" />
+                    </button>
+                    <aside className="ca-pin-popover" id={pinPanelId} role="status" aria-live="polite">
+                      <p>Atlas Pin copied - paste into Claude, Codex, ChatGPT, a PR, or support.</p>
+                      <pre>
+                        {pinLines.map((line, lineIndex) => (
+                          <span key={`${lineIndex}-${line}`} style={{ "--line-index": lineIndex } as CSSProperties}>
+                            {line}
+                          </span>
+                        ))}
+                      </pre>
+                    </aside>
+                  </>
+                ) : null}
               </li>
             );
           })}
@@ -122,15 +198,15 @@ export function JourneyHeader({
           <input
             id={opacityId}
             type="range"
-            min="0.45"
+            min="0"
             max="1"
             step="0.05"
             value={opacity}
             aria-label="Atlas overlay opacity"
+            aria-orientation="vertical"
             onChange={(event) => setOpacity(Number(event.currentTarget.value))}
           />
         </label>
-        <CopyAtlasPinButton pin={pin} onCopied={onCopyPin} />
       </div>
     </header>
   );

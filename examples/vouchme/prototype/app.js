@@ -6,6 +6,10 @@ const logoSrc =
 let currentOpacity = 0.9;
 
 function buildAtlasPin(data) {
+  return buildAtlasPinLines(data).join("\n");
+}
+
+function buildAtlasPinLines(data) {
   const lines = ["ContextAtlas Pin", `Coordinate: ${data.coordinate}`];
 
   if (data.alias) lines.push(`Alias: ${data.alias}`);
@@ -18,7 +22,39 @@ function buildAtlasPin(data) {
     lines.push(`Suggested scope: ${data.suggestedScope.join(", ")}`);
   }
 
-  return lines.join("\n");
+  return lines;
+}
+
+function buildCoordinatePacket() {
+  return coordinate;
+}
+
+function RoleGlyph() {
+  return `
+    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" class="ca-journey__role-icon">
+      <circle cx="12" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6" />
+      <path d="M5 19.5a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+  `;
+}
+
+function CopyGlyph(className = "") {
+  return `
+    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" class="${className}">
+      <rect x="8" y="8" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+      <path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </svg>
+  `;
+}
+
+function LocationGlyph(className = "") {
+  return `
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false" class="${className}">
+      <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.7" />
+      <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+      <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+    </svg>
+  `;
 }
 
 function escapeHtml(value) {
@@ -31,6 +67,10 @@ function escapeHtml(value) {
 }
 
 function renderJourneyHeader(opacity) {
+  const pinPacket = buildAtlasPin(pin);
+  const pinLines = buildAtlasPinLines(pin)
+    .map((line, index) => `<span style="--line-index: ${index}">${escapeHtml(line)}</span>`)
+    .join("");
   const activeIndex = journey.steps.findIndex((step) => step.id === journey.currentStepId);
   const steps = journey.steps
     .map((step, index) => {
@@ -39,11 +79,27 @@ function renderJourneyHeader(opacity) {
         state === "active"
           ? '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false" class="ca-journey__step-check"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>'
           : "";
+      const role = step.id === "candidate" ? RoleGlyph() : "";
+      const locator =
+        state === "active"
+          ? `
+            <button type="button" class="ca-locator" id="copy-atlas-pin" aria-label="Copy Atlas Pin" aria-describedby="atlas-pin-panel">
+              ${LocationGlyph("ca-locator__pin")}
+              ${CopyGlyph("ca-locator__copy")}
+            </button>
+            <aside class="ca-pin-popover" id="atlas-pin-panel" role="status" aria-live="polite">
+              <p>Atlas Pin copied - paste into Claude, Codex, ChatGPT, a PR, or support.</p>
+              <pre>${pinLines}</pre>
+            </aside>
+          `
+          : "";
 
       return `
         <li class="ca-journey__step is-${state}" ${state === "active" ? 'aria-current="step"' : ""}>
           ${check}
+          ${role}
           <span class="ca-journey__step-label">${escapeHtml(step.label)}</span>
+          ${locator}
         </li>
       `;
     })
@@ -52,13 +108,13 @@ function renderJourneyHeader(opacity) {
   return `
     <header class="ca-journey" style="--atlas-opacity: ${opacity}" data-context-coordinate="${escapeHtml(journey.coordinate)}" aria-label="Journey position for ${escapeHtml(journey.alias)}">
       <div class="ca-journey__identity">
-        <span class="ca-journey__logo" aria-hidden="true">
+        <button type="button" class="ca-journey__logo" id="copy-coordinate" aria-label="Reveal and copy coordinate">
           <img src="${logoSrc}" alt="" />
-        </span>
-        <span class="ca-journey__coords">
+        </button>
+        <button type="button" class="ca-journey__coords" id="copy-coordinate-details" aria-label="Copy coordinate">
           <span class="ca-journey__coordinate">${escapeHtml(journey.coordinate)}</span>
-          <span class="ca-journey__alias">${escapeHtml(journey.alias)}</span>
-        </span>
+          <span class="ca-journey__copy-coordinate">${CopyGlyph()}</span>
+        </button>
       </div>
 
       <div class="ca-journey__center">
@@ -68,31 +124,10 @@ function renderJourneyHeader(opacity) {
       <div class="ca-journey__actions">
         <label class="ca-opacity" for="atlas-opacity">
           <span class="ca-opacity__label">Opacity</span>
-          <input id="atlas-opacity" type="range" min="0.45" max="1" step="0.05" value="${opacity}" aria-label="Atlas overlay opacity" />
+          <input id="atlas-opacity" type="range" min="0" max="1" step="0.05" value="${opacity}" aria-label="Atlas overlay opacity" aria-orientation="vertical" />
         </label>
-        <button type="button" class="ca-pin-button" id="copy-atlas-pin" aria-live="polite">
-          <span class="ca-pin-button__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" focusable="false">
-              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6" />
-              <circle cx="12" cy="12" r="2.5" fill="currentColor" />
-              <path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-            </svg>
-          </span>
-          <span class="ca-pin-button__label">Copy Atlas Pin</span>
-        </button>
       </div>
     </header>
-  `;
-}
-
-function renderCopiedPanel(text) {
-  if (!text) return "";
-
-  return `
-    <section class="vm-card ca-copied-panel" aria-live="polite">
-      <p>Atlas Pin copied - paste into Claude, Codex, ChatGPT, a PR, or support.</p>
-      <pre>${escapeHtml(text)}</pre>
-    </section>
   `;
 }
 
@@ -217,7 +252,7 @@ function renderWorkbench(open) {
   `;
 }
 
-function render({ copiedText = "", workbenchOpen = false, opacity = currentOpacity } = {}) {
+function render({ workbenchOpen = false, opacity = currentOpacity } = {}) {
   currentOpacity = Number(opacity);
 
   root.innerHTML = `
@@ -227,13 +262,12 @@ function render({ copiedText = "", workbenchOpen = false, opacity = currentOpaci
         <span class="ca-brandline__hint">Map the context before the model guesses</span>
       </div>
       ${renderJourneyHeader(currentOpacity)}
-      ${renderCopiedPanel(copiedText)}
       ${renderVouchBody()}
       ${renderWorkbench(workbenchOpen)}
     </div>
   `;
 
-  document.getElementById("copy-atlas-pin")?.addEventListener("click", async () => {
+  document.getElementById("copy-atlas-pin")?.addEventListener("click", async (event) => {
     const text = buildAtlasPin(pin);
     try {
       await navigator.clipboard?.writeText(text);
@@ -241,14 +275,20 @@ function render({ copiedText = "", workbenchOpen = false, opacity = currentOpaci
       // Clipboard can reject on insecure origins or denied permissions. The
       // visible packet below remains selectable either way.
     }
-
-    render({ copiedText: text, workbenchOpen, opacity: currentOpacity });
-    document.getElementById("copy-atlas-pin")?.classList.add("is-copied");
-    document.querySelector(".ca-pin-button__label").textContent = "Copied";
+    event.currentTarget.blur();
   });
 
+  document.querySelectorAll("#copy-coordinate, #copy-coordinate-details").forEach((target) => target.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard?.writeText(buildCoordinatePacket());
+    } catch {
+      // The coordinate remains visible on hover/focus if clipboard access is denied.
+    }
+    document.querySelector(".ca-journey__identity")?.classList.add("is-coordinate-copied");
+  }));
+
   document.getElementById("workbench-toggle")?.addEventListener("click", () => {
-    render({ copiedText, workbenchOpen: !workbenchOpen, opacity: currentOpacity });
+    render({ workbenchOpen: !workbenchOpen, opacity: currentOpacity });
   });
 
   document.getElementById("atlas-opacity")?.addEventListener("input", (event) => {

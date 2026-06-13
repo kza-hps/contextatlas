@@ -21,8 +21,9 @@ Route:        /candidate/vouch-id
 
 ## What you should understand at a glance
 
-> This record is at **Vouch completed** on the Candidate journey, I can tune the
-> Atlas overlay opacity, **copy the Atlas Pin**, or **open deeper context**.
+> This record is at **Vouch completed** on the Candidate journey. The red locator
+> marks "here/now", the logo reveals the exact coordinate, and the active pill
+> exposes the copyable Atlas Pin.
 
 ## How it is wired
 
@@ -64,8 +65,9 @@ http://localhost:8000/examples/vouchme/prototype/      (python http.server)
 ## States to try
 
 - **Active step** - "Vouch completed" is highlighted as a status chip.
-- **Opacity** - adjust the L0 overlay without changing the underlying VouchMe page.
-- **Copied pin** - click *Copy Atlas Pin*; the button confirms and the packet appears.
+- **Coordinate reveal** - hover the cA logo; the coordinate slides out with a copy affordance.
+- **Atlas Pin** - hover the red locator in the active pill; the pin packet drops beneath it.
+- **Opacity** - adjust the vertical control at the far right of the header.
 - **Hover / focus** - the pin button, share button, and workbench handle all respond.
 - **Expanded / collapsed** - click the *L1-L5 Workbench* handle to pull the blind up.
 - **Responsive** - narrow the window; the header stacks and the workbench reflows.
