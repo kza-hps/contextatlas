@@ -10,8 +10,10 @@ export type { CopyAtlasPinButtonProps } from "./CopyAtlasPinButton.js";
 export { AtlasWorkbench } from "./AtlasWorkbench.js";
 export type {
   AtlasWorkbenchProps,
+  WorkbenchEdge,
   WorkbenchGroup,
   WorkbenchLayer,
+  WorkbenchNodeRef,
 } from "./AtlasWorkbench.js";
 
 export { buildAtlasPin } from "./pinPacket.js";

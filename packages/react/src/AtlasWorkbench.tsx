@@ -1,4 +1,11 @@
-import { useId, useState, type ComponentPropsWithoutRef, type CSSProperties } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
+  type CSSProperties,
+} from "react";
 import type { AtlasLayer } from "@contextatlas/schema";
 
 export interface WorkbenchGroup {
@@ -17,6 +24,17 @@ export interface WorkbenchLayer {
   groups: readonly WorkbenchGroup[];
 }
 
+export interface WorkbenchNodeRef {
+  layer: string;
+  group: string;
+  value: string;
+}
+
+export interface WorkbenchEdge {
+  from: WorkbenchNodeRef;
+  to: WorkbenchNodeRef;
+}
+
 export interface AtlasWorkbenchProps
   extends Omit<ComponentPropsWithoutRef<"section">, "children"> {
   /** Coordinate this evidence belongs to. */
@@ -25,6 +43,8 @@ export interface AtlasWorkbenchProps
   alias?: string;
   /** L1-L5 evidence, in order. */
   layers: readonly WorkbenchLayer[];
+  /** Explicit relationships between rendered evidence nodes. */
+  edges?: readonly WorkbenchEdge[];
   /** Whether the workbench starts fully expanded. Defaults to false. */
   defaultOpen?: boolean;
   /** Initial number of visible layers. Overrides defaultOpen when provided. */
@@ -56,6 +76,10 @@ function ChevronGlyph({ open }: { open: boolean }) {
   );
 }
 
+function getWorkbenchNodeId(layerId: string, groupLabel: string, value: string) {
+  return `${layerId}::${groupLabel}::${value}`;
+}
+
 /**
  * L1-L5 Atlas Workbench, the deeper context behind the same coordinate.
  *
@@ -66,6 +90,7 @@ export function AtlasWorkbench({
   coordinate,
   alias,
   layers,
+  edges = [],
   defaultOpen = false,
   defaultDepth,
   className,
@@ -76,6 +101,9 @@ export function AtlasWorkbench({
     Math.max(0, Math.min(initialDepth, layers.length)),
   );
   const panelId = useId();
+  const diagramRef = useRef<HTMLDivElement>(null);
+  const connectorsRef = useRef<SVGSVGElement>(null);
+  const arrowId = useId().replaceAll(":", "");
   const open = revealedDepth > 0;
   const nextDepth = revealedDepth >= layers.length ? 0 : revealedDepth + 1;
   const nextLayer = layers[revealedDepth];
@@ -83,6 +111,70 @@ export function AtlasWorkbench({
   const combinedClassName = ["ca-workbench", open ? "is-open" : "is-collapsed", className]
     .filter(Boolean)
     .join(" ");
+
+  useEffect(() => {
+    const diagram = diagramRef.current;
+    const svg = connectorsRef.current;
+    if (!diagram || !svg) return;
+
+    const draw = () => {
+      const diagramRect = diagram.getBoundingClientRect();
+      svg.setAttribute("viewBox", `0 0 ${diagramRect.width} ${diagramRect.height}`);
+      svg.setAttribute("width", String(diagramRect.width));
+      svg.setAttribute("height", String(diagramRect.height));
+      svg.querySelectorAll(".ca-workbench__connector").forEach((node) => node.remove());
+
+      const nodeById = new Map(
+        [...diagram.querySelectorAll<HTMLElement>("[data-node-id]")].map((node) => [
+          node.dataset.nodeId,
+          node,
+        ]),
+      );
+      const revealedLayerIds = new Set(
+        [...diagram.querySelectorAll<HTMLElement>(".ca-workbench__swimlane.is-revealed")].map(
+          (lane) => lane.dataset.layer,
+        ),
+      );
+
+      edges.forEach((edge, index) => {
+        if (!revealedLayerIds.has(edge.from.layer) || !revealedLayerIds.has(edge.to.layer)) return;
+
+        const source = nodeById.get(getWorkbenchNodeId(edge.from.layer, edge.from.group, edge.from.value));
+        const target = nodeById.get(getWorkbenchNodeId(edge.to.layer, edge.to.group, edge.to.value));
+        if (!source || !target) return;
+
+        const sourceRect = source.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const start = {
+          x: sourceRect.left + sourceRect.width / 2 - diagramRect.left,
+          y: sourceRect.bottom - diagramRect.top,
+        };
+        const end = {
+          x: targetRect.left + targetRect.width / 2 - diagramRect.left,
+          y: targetRect.top - diagramRect.top,
+        };
+        const deltaY = Math.max(34, Math.abs(end.y - start.y));
+        const midY = start.y + deltaY * 0.48;
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("class", "ca-workbench__connector");
+        path.setAttribute(
+          "d",
+          `M ${start.x} ${start.y} C ${start.x} ${midY}, ${end.x} ${midY}, ${end.x} ${end.y}`,
+        );
+        path.setAttribute("marker-end", `url(#${arrowId})`);
+        path.style.setProperty("--edge-index", String(index));
+        svg.appendChild(path);
+      });
+    };
+
+    requestAnimationFrame(() => {
+      draw();
+      requestAnimationFrame(draw);
+    });
+
+    window.addEventListener("resize", draw);
+    return () => window.removeEventListener("resize", draw);
+  }, [arrowId, edges, layers, revealedDepth]);
 
   return (
     <section
@@ -118,7 +210,26 @@ export function AtlasWorkbench({
           Context inversion - pull one layer at a time, inspect only the evidence needed,
           and widen the map only when the visible lane is not enough.
         </p>
-        <div className="ca-workbench__diagram" aria-label="Layered context swimlane diagram">
+        <div
+          className="ca-workbench__diagram"
+          aria-label="Layered context swimlane diagram"
+          ref={diagramRef}
+        >
+          <svg className="ca-workbench__connectors" aria-hidden="true" ref={connectorsRef}>
+            <defs>
+              <marker
+                id={arrowId}
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+            </defs>
+          </svg>
           {layers.map((layer, index) => {
             const layerDepth = index + 1;
             const revealed = layerDepth <= revealedDepth;
@@ -149,7 +260,11 @@ export function AtlasWorkbench({
                           <span className="ca-workbench__group-label">{group.label}</span>
                           <span className="ca-workbench__nodes">
                             {group.values.map((value) => (
-                              <span key={value} className="ca-workbench__node">
+                              <span
+                                key={value}
+                                className="ca-workbench__node"
+                                data-node-id={getWorkbenchNodeId(String(layer.id), group.label, value)}
+                              >
                                 {value}
                               </span>
                             ))}

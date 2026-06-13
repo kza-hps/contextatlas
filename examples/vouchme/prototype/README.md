@@ -71,4 +71,5 @@ http://localhost:8000/examples/vouchme/prototype/      (python http.server)
 - **Hover / focus** - the locator, share button, and workbench handle all respond.
 - **Layer reveal** - click the *L1-L5 Workbench* handle repeatedly to pull up L1 through L5.
 - **Swimlanes** - each revealed layer shows mapped evidence as diagram nodes.
+- **Connectors** - revealed nodes trace dependency lines only when both endpoints are visible.
 - **Responsive** - narrow the window; the header stacks and the workbench reflows.

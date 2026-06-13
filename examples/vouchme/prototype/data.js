@@ -88,6 +88,70 @@ export const workbenchLayers = [
   },
 ];
 
+/** Explicit connector edges between mapped evidence nodes. */
+export const workbenchEdges = [
+  {
+    from: { layer: "L1", group: "Routes", value: "/candidate/vouch-id" },
+    to: { layer: "L2", group: "Statuses", value: "vouch_id_issued" },
+  },
+  {
+    from: { layer: "L1", group: "Routes", value: "/candidate/vouch-id" },
+    to: { layer: "L2", group: "Notifications", value: "candidate_vouch_id_ready" },
+  },
+  {
+    from: { layer: "L1", group: "Routes", value: "/candidate/profile" },
+    to: { layer: "L2", group: "Statuses", value: "reusable_signal_ready" },
+  },
+  {
+    from: { layer: "L1", group: "Components", value: "VouchIdCard" },
+    to: { layer: "L2", group: "Statuses", value: "vouch_id_issued" },
+  },
+  {
+    from: { layer: "L1", group: "Components", value: "SharingControls" },
+    to: { layer: "L2", group: "Notifications", value: "candidate_vouch_id_ready" },
+  },
+  {
+    from: { layer: "L2", group: "Statuses", value: "vouch_id_issued" },
+    to: { layer: "L3", group: "Tables", value: "vouch_ids" },
+  },
+  {
+    from: { layer: "L2", group: "Statuses", value: "reusable_signal_ready" },
+    to: { layer: "L3", group: "Tables", value: "candidates" },
+  },
+  {
+    from: { layer: "L2", group: "Notifications", value: "candidate_vouch_id_ready" },
+    to: { layer: "L3", group: "Tables", value: "vouch_responses" },
+  },
+  {
+    from: { layer: "L2", group: "Notifications", value: "candidate_vouch_id_ready" },
+    to: { layer: "L4", group: "Services", value: "resend-email" },
+  },
+  {
+    from: { layer: "L3", group: "Tables", value: "vouch_ids" },
+    to: { layer: "L5", group: "Tests", value: "candidate-vouch-id.spec.ts" },
+  },
+  {
+    from: { layer: "L3", group: "Tables", value: "vouch_responses" },
+    to: { layer: "L5", group: "Tests", value: "candidate-vouch-id.spec.ts" },
+  },
+  {
+    from: { layer: "L4", group: "Services", value: "supabase-database" },
+    to: { layer: "L5", group: "Tests", value: "candidate-vouch-id.spec.ts" },
+  },
+  {
+    from: { layer: "L4", group: "Services", value: "resend-email" },
+    to: { layer: "L5", group: "Tests", value: "candidate-vouch-id.spec.ts" },
+  },
+  {
+    from: { layer: "L1", group: "Components", value: "VouchIdCard" },
+    to: { layer: "L5", group: "Tests", value: "candidate-vouch-id.spec.ts" },
+  },
+  {
+    from: { layer: "L1", group: "Components", value: "SharingControls" },
+    to: { layer: "L5", group: "Tests", value: "candidate-vouch-id.spec.ts" },
+  },
+];
+
 /** Referee evidence shown in the VouchMe page body. */
 export const reference = {
   refereeName: "Sarah Jenkins",

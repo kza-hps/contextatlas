@@ -855,6 +855,7 @@ body::before {
 }
 
 .ca-workbench__diagram {
+  position: relative;
   display: grid;
   gap: 0;
   border: 1px solid var(--graphite);
@@ -865,7 +866,36 @@ body::before {
     rgba(5, 6, 10, 0.28);
 }
 
+.ca-workbench__connectors {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.ca-workbench__connectors marker path {
+  fill: rgba(167, 176, 192, 0.72);
+}
+
+.ca-workbench__connector {
+  fill: none;
+  stroke: rgba(167, 176, 192, 0.56);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 420;
+  stroke-dashoffset: 420;
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.12));
+  animation: ca-connector-trace 0.42s ease forwards;
+  animation-delay: calc(var(--edge-index) * 0.025s);
+}
+
 .ca-workbench__swimlane {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 192px minmax(0, 1fr);
   min-height: 34px;
@@ -953,17 +983,7 @@ body::before {
   right: 7%;
   top: 50%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(167, 176, 192, 0.42), transparent);
-}
-
-.ca-workbench__swimlane.is-revealed:not(:first-child) .ca-workbench__lane-canvas::after {
-  content: "";
-  position: absolute;
-  top: -54px;
-  left: 50%;
-  width: 1px;
-  height: 68px;
-  background: linear-gradient(180deg, rgba(167, 176, 192, 0.18), rgba(167, 176, 192, 0.58));
+  background: linear-gradient(90deg, transparent, rgba(68, 80, 100, 0.35), transparent);
 }
 
 .ca-workbench__swimlane.is-compressed .ca-workbench__lane-canvas {
@@ -979,7 +999,7 @@ body::before {
 
 .ca-workbench__node-group {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: grid;
   gap: 7px;
   min-width: min(260px, 35%);
@@ -1028,6 +1048,12 @@ body::before {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes ca-connector-trace {
+  to {
+    stroke-dashoffset: 0;
   }
 }
 

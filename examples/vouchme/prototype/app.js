@@ -1,4 +1,4 @@
-import { alias, coordinate, journey, pin, reference, workbenchLayers } from "./data.js";
+import { alias, coordinate, journey, pin, reference, workbenchEdges, workbenchLayers } from "./data.js";
 
 const root = document.getElementById("root");
 const logoSrc =
@@ -64,6 +64,10 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function getWorkbenchNodeId(layerId, groupLabel, value) {
+  return `${layerId}::${groupLabel}::${value}`;
 }
 
 function renderJourneyHeader(opacity) {
@@ -196,7 +200,10 @@ function renderDiagramNodes(layer, revealed) {
   const groups = layer.groups
     .map((group) => {
       const values = group.values
-        .map((value) => `<span class="ca-workbench__node">${escapeHtml(value)}</span>`)
+        .map((value) => {
+          const nodeId = getWorkbenchNodeId(layer.id, group.label, value);
+          return `<span class="ca-workbench__node" data-node-id="${escapeHtml(nodeId)}">${escapeHtml(value)}</span>`;
+        })
         .join("");
 
       return `
@@ -261,10 +268,68 @@ function renderWorkbench(revealedDepth) {
           Context inversion - pull one layer at a time, inspect only the evidence needed,
           and widen the map only when the visible lane is not enough.
         </p>
-        <div class="ca-workbench__diagram" aria-label="Layered context swimlane diagram">${layers}</div>
+        <div class="ca-workbench__diagram" aria-label="Layered context swimlane diagram">
+          <svg class="ca-workbench__connectors" aria-hidden="true">
+            <defs>
+              <marker id="ca-workbench-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z"></path>
+              </marker>
+            </defs>
+          </svg>
+          ${layers}
+        </div>
       </div>
     </section>
   `;
+}
+
+function drawWorkbenchConnectors() {
+  const diagram = document.querySelector(".ca-workbench__diagram");
+  const svg = document.querySelector(".ca-workbench__connectors");
+
+  if (!diagram || !svg) return;
+
+  const diagramRect = diagram.getBoundingClientRect();
+  svg.setAttribute("viewBox", `0 0 ${diagramRect.width} ${diagramRect.height}`);
+  svg.setAttribute("width", String(diagramRect.width));
+  svg.setAttribute("height", String(diagramRect.height));
+  svg.querySelectorAll(".ca-workbench__connector").forEach((node) => node.remove());
+
+  const nodeById = new Map(
+    [...diagram.querySelectorAll("[data-node-id]")].map((node) => [node.dataset.nodeId, node]),
+  );
+  const revealedLayerIds = new Set(
+    [...diagram.querySelectorAll(".ca-workbench__swimlane.is-revealed")].map((lane) => lane.dataset.layer),
+  );
+
+  const makePoint = (node, side) => {
+    const rect = node.getBoundingClientRect();
+    const x = side === "source" ? rect.left + rect.width / 2 : rect.left + rect.width / 2;
+    const y = side === "source" ? rect.bottom : rect.top;
+    return {
+      x: x - diagramRect.left,
+      y: y - diagramRect.top,
+    };
+  };
+
+  workbenchEdges.forEach((edge, index) => {
+    if (!revealedLayerIds.has(edge.from.layer) || !revealedLayerIds.has(edge.to.layer)) return;
+
+    const source = nodeById.get(getWorkbenchNodeId(edge.from.layer, edge.from.group, edge.from.value));
+    const target = nodeById.get(getWorkbenchNodeId(edge.to.layer, edge.to.group, edge.to.value));
+    if (!source || !target) return;
+
+    const start = makePoint(source, "source");
+    const end = makePoint(target, "target");
+    const deltaY = Math.max(34, Math.abs(end.y - start.y));
+    const midY = start.y + deltaY * 0.48;
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("class", "ca-workbench__connector");
+    path.setAttribute("d", `M ${start.x} ${start.y} C ${start.x} ${midY}, ${end.x} ${midY}, ${end.x} ${end.y}`);
+    path.setAttribute("marker-end", "url(#ca-workbench-arrow)");
+    path.style.setProperty("--edge-index", String(index));
+    svg.appendChild(path);
+  });
 }
 
 function render({ workbenchDepth = 0, opacity = currentOpacity } = {}) {
@@ -317,6 +382,11 @@ function render({ workbenchDepth = 0, opacity = currentOpacity } = {}) {
     const nextOpacity = event.target.value;
     currentOpacity = Number(nextOpacity);
     document.querySelector(".ca-journey")?.style.setProperty("--atlas-opacity", nextOpacity);
+  });
+
+  requestAnimationFrame(() => {
+    drawWorkbenchConnectors();
+    requestAnimationFrame(drawWorkbenchConnectors);
   });
 }
 
