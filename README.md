@@ -125,4 +125,27 @@ examples/vouchme/context-atlas
 
 VouchMe is a first customer-shaped example. It can use VouchMe-specific aliases and labels, but those aliases are not the core coordinate model.
 
+## Runnable Prototype
+
+A working, local, inspectable prototype of the product wedge — the record-aware `L0`
+Journey Header over a live VouchMe page, a copyable Atlas Pin, and an expandable
+`L1`–`L5` workbench — lives at:
+
+```txt
+examples/vouchme/prototype
+```
+
+It mirrors the `@contextatlas/react` components (`JourneyHeader`,
+`AtlasWorkbench`, `CopyAtlasPinButton`) against static data for coordinate
+`CA:KZA:VOUCHME:N00050`, but the demo itself is static and local-first so it
+does not need CDN React, browser-side Babel, external fonts, or `dist/` output.
+Run it with:
+
+```bash
+python -m http.server 8000
+# then open http://localhost:8000/examples/vouchme/prototype/
+```
+
+See [examples/vouchme/prototype/README.md](./examples/vouchme/prototype/README.md) for details.
+
 See [docs/ux-atlas-blinds.md](./docs/ux-atlas-blinds.md) for the Atlas Blinds and Topology HUD interaction model.
