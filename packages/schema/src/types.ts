@@ -12,6 +12,29 @@ export interface AtlasCoordinate {
   relationships?: readonly AtlasEdge[];
 }
 
+export interface AtlasJourneyStep {
+  id: string;
+  coordinate?: AtlasCoordinateString;
+  label: string;
+  role?: string;
+  stage?: string;
+  status?: string;
+}
+
+export interface AtlasJourneyContext {
+  coordinate: AtlasCoordinateString;
+  recordId?: string;
+  sourceRoute?: string;
+  viewerRole?: string;
+  journeyStage?: string;
+  status?: string;
+  label?: string;
+  nextAction?: string;
+  currentStepId?: string;
+  visibleSteps?: readonly AtlasJourneyStep[];
+  suggestedScope?: AtlasEvidence;
+}
+
 export interface AtlasClassification {
   property?: string;
   surface?: string;

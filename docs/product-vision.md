@@ -4,7 +4,28 @@
 
 ContextAtlas is a generic, repo-native topology discovery and classification engine for AI-assisted software teams. It can be pointed at an active repo or website, discover its surfaces and dependencies, classify nodes and edges from evidence, assign stable coordinates, and generate maps that connect experience, code, data, integrations, tests, and AI context.
 
-The product should feel like a semantic debug layer for software products: a map room for software topology, projected directly over the product surface. The live app remains the primary visual environment while ContextAtlas appears as a thin transparent Topology HUD with Atlas Pins, coordinate badges, and draggable Atlas Blinds.
+The product starts from a record-aware `L0` Journey Header: a compact orientation strip that tells a user where they are in a specific record, page, role, status, journey stage, and next action. From that same coordinate, ContextAtlas opens downward into the page, workflow, data, integration, test, and AI context needed by support, product, engineering, and agents.
+
+The fuller product should feel like a semantic debug layer for software products: a map room for software topology, projected directly over the product surface. The live app remains the primary visual environment while ContextAtlas appears as a thin transparent Topology HUD with Atlas Pins, coordinate badges, Journey Headers, and draggable Atlas Blinds.
+
+## Product Wedge
+
+The first practical product is not a standalone dashboard. It is the `L0` Journey Header and its copyable coordinate marker.
+
+The Journey Header answers:
+
+- What record or task am I viewing?
+- What role am I wearing for this record?
+- Where is this record in its journey?
+- What is the current visible status?
+- What has already happened?
+- What happens next?
+- What should I do now?
+- What coordinate can I copy for deeper context?
+
+This is especially important because a person is not permanently one role. The same account can be a candidate on one record, a referee on another, and a recruiter on a third. ContextAtlas should resolve the visible context from the current route, record, viewer relationship, and status rather than relying on global session mode.
+
+The lower layers are the paid or power-user expansion: Atlas Pins, URL resolution, Atlas Blinds, workbench views, review queues, generated diagrams, MCP tools, and context packets.
 
 ## Core Product
 
@@ -19,6 +40,13 @@ ContextAtlas is not a catalogue of every possible page type, journey type, actor
 7. Queue uncertain mappings for human review
 
 Project-specific language emerges from evidence and review. A customer can call something a candidate journey, checkout flow, onboarding task, admin surface, webhook, or support operation without requiring ContextAtlas to encode those words as a global ontology.
+
+The center of gravity is context inversion:
+
+1. Start from the visible user experience.
+2. Resolve the route, record, role, stage, status, and coordinate.
+3. Load only the mapped routes, components, statuses, data, integrations, tests, and notes.
+4. Widen only when the coordinate does not contain enough evidence.
 
 ## Product Metaphor
 
@@ -89,6 +117,7 @@ Waypoints are human-friendly markers over the same neutral coordinate graph. The
 
 The current `AtlasPin` is a seed component, not the complete UX. The fuller direction is:
 
+- `JourneyHeader`: compact record-aware `L0` orientation header for active product pages.
 - `AtlasPin`: embedded marker for the current mapped surface.
 - `CoordinateBadge`: compact coordinate, route, layer, label, and confidence display.
 - `AtlasBlind`: draggable top or bottom glass panel.
@@ -142,4 +171,4 @@ Secondary/reference screens:
 
 ## First Worked Example
 
-VouchMe is the first customer-shaped example. It is useful because the same trust record may be viewed by different actors at different layers. That makes it a good proving ground for classification and coordinates, but it is not the ContextAtlas ontology.
+VouchMe is the first customer-shaped example. It is useful because the same trust record may be viewed by different actors at different layers. That makes it a good proving ground for record-aware journey context, classification, route resolution, layer visibility, and coordinates, but it is not the ContextAtlas ontology.

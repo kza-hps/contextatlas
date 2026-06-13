@@ -4,9 +4,33 @@
 
 ContextAtlas is a repo-native topology discovery and classification engine for active repos, websites, and apps. It discovers surfaces and dependencies, extracts evidence, builds a graph, assigns stable neutral coordinates, and generates layered maps from user experience down to code, data, integrations, tests, and AI context.
 
-The preferred product experience is overlay-first, not dashboard-first. ContextAtlas can render as a transparent topology HUD over a live or local app so the app itself stays the main surface. Atlas Pins, coordinate badges, and draggable Atlas Blinds layer coordinates, labels, confidence, and evidence directly over the product being mapped.
+The first product wedge is a record-aware `L0` Journey Header: a compact "you are here" map that can sit inside an active product and orient the user to the current record, route, role, status, stage, and next action. The same coordinate then links downward into the implementation layers that help product teams, support, engineers, and AI coding agents understand what is behind that moment.
+
+The preferred advanced product experience is overlay-first, not dashboard-first. ContextAtlas can render as a transparent topology HUD over a live or local app so the app itself stays the main surface. Atlas Pins, coordinate badges, Journey Headers, and draggable Atlas Blinds layer coordinates, labels, confidence, and evidence directly over the product being mapped.
 
 ContextAtlas owns the formula and algorithm, not a fixed vocabulary. Project-specific language such as "candidate", "referee", "checkout", "marketing site", or "admin workflow" belongs in classification metadata, evidence, and aliases.
+
+## Center Of Gravity
+
+ContextAtlas starts from visible user experience, not from backend inventory.
+
+The core question is:
+
+```txt
+In this specific record, on this specific page, wearing this specific role, where am I?
+```
+
+For VouchMe, a dashboard card might open an old vouch where the viewer is the candidate and the record is completed. Another card might open a live request where the same person is acting as a referee. ContextAtlas should resolve each page fresh from route, record, viewer role, status, and evidence.
+
+That `L0` journey context powers:
+
+- a user-facing Journey Header
+- a copyable Atlas Pin or Waypoint
+- a URL-to-coordinate resolver
+- shareable layer diagrams
+- scoped context packets for Claude, Codex, ChatGPT, support, and PR review
+
+The lower layers are the context inversion system: start narrow from the coordinate, load only the mapped routes, components, statuses, data, integrations, tests, and notes, then widen only when the coordinate does not contain enough evidence.
 
 ## Coordinate Model
 
@@ -43,11 +67,12 @@ ContextAtlas should follow this pipeline:
 
 ## Overlay-First UX
 
-The primary UX metaphor is a transparent topology HUD:
+The primary embedded UX is a record-aware `L0` Journey Header. The primary advanced UX metaphor is a transparent topology HUD:
 
 - The live website or app remains visible and usable.
-- A small Atlas Pin or pull tab marks that the current surface has topology context.
-- A top Atlas Blind can be pulled down for `L0` product and user-journey meaning.
+- A compact Journey Header shows the current role, stage, status, next action, and nearby steps.
+- A small Atlas Pin or pull tab marks that the current surface has deeper topology context.
+- A top Atlas Blind can be pulled down for expanded `L0` product and user-journey meaning.
 - A bottom Atlas Blind can be pulled up for `L1`-`L5` routes, components, workflow, data, integrations, tests, and operations evidence.
 - Coordinates and visible context should be screenshot-ready and copyable for AI chatbots, coding agents, support tickets, and product discussions.
 

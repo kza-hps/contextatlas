@@ -5,6 +5,8 @@ export type {
   AtlasCoordinateString,
   AtlasEdge,
   AtlasEvidence,
+  AtlasJourneyContext,
+  AtlasJourneyStep,
   AtlasLayer,
   AtlasLayerDefinition,
   AtlasRouteEntry,
